@@ -1,0 +1,22 @@
+[project]
+name = "furongwang-github-io"
+version = "0.0.1"
+description = "Initial website for Furong Wang GitHub"
+authors = [
+    {name = "frwang0919",email = "197346043+frwang0919@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy (>=2.2.2,<3.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "jupyter (>=1.1.1,<2.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "furongwang"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
