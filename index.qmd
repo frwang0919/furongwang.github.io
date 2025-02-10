@@ -1,0 +1,15 @@
+---
+title: "Welcome to My Website"
+author: "Furong Wang"
+date: "2025-02-09"
+format:
+  html:
+    theme: journal
+    toc: true
+---
+# Hello, World!  
+Welcome to my Quarto website.  
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
