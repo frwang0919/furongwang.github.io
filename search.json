@@ -4,7 +4,42 @@
     "href": "index.html",
     "title": "Welcome to My Website",
     "section": "",
-    "text": "Hello, World!\nWelcome to my Quarto website.\nThis is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "Welcome to my Quarto website.\n\n\nI am a graduate student at Boston University. I am a web enthusiast passionate about coding and design. I love seafood and hotpot.\n\n\n\n\nWatching Movies\nTraveling\nVisiting Disney Theme Parks\n\n\n\n\n\nMy GitHub\n\n\n\n\n\nBusiness Analytics\nData Visualization\n\n\n\n\nYou can reach me via email at frwang@bu.edu.\nThis is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "index.html#about-me",
+    "href": "index.html#about-me",
+    "title": "Welcome to My Website",
+    "section": "",
+    "text": "I am a graduate student at Boston University. I am a web enthusiast passionate about coding and design. I love seafood and hotpot."
+  },
+  {
+    "objectID": "index.html#my-hobbies",
+    "href": "index.html#my-hobbies",
+    "title": "Welcome to My Website",
+    "section": "",
+    "text": "Watching Movies\nTraveling\nVisiting Disney Theme Parks"
+  },
+  {
+    "objectID": "index.html#useful-links",
+    "href": "index.html#useful-links",
+    "title": "Welcome to My Website",
+    "section": "",
+    "text": "My GitHub"
+  },
+  {
+    "objectID": "index.html#skills",
+    "href": "index.html#skills",
+    "title": "Welcome to My Website",
+    "section": "",
+    "text": "Business Analytics\nData Visualization"
+  },
+  {
+    "objectID": "index.html#contact",
+    "href": "index.html#contact",
+    "title": "Welcome to My Website",
+    "section": "",
+    "text": "You can reach me via email at frwang@bu.edu.\nThis is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
   },
   {
     "objectID": "about.html",
