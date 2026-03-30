@@ -37,30 +37,37 @@ In this project, I developed a classification model to identify passengers at ri
 - Language: Python
 - Tools: Pandas, Seaborn, Scikit-learn (Logistic Regression)
 
-![](images/classification_1.png){width=100% fig-align="center"}
+::: {.columns}
+
+::: {.column width="50%"}
+![](images/classification_1.png){width=100%}
+:::
+
+::: {.column width="50%"}
+![](images/classification_2.png){width=100%}
+:::
+
+:::
 [Read More](classification.qmd){.btn .btn-primary}
 
-## Enterprise Risk Analytics
-### 🔋 Monte Carlo Profit Simulation
-Conducted Monte Carlo simulations to estimate profit outcomes for an electric motorboat startup. Visualized results with ribbon plots showing mean profit and 80%/99% prediction intervals, and density plots illustrating profit distributions across production levels.
-
-- Language: R
-- Tools: ggplot2, simulation modeling
-
-![](images/risk.png){width=100% fig-align="center"}
-[Read More](AD616.qmd){.btn .btn-primary}
-
-
-## Web Analytics
+## Web Analytics {#web-analytics}
 ### 💼 Job Postings Analytics Using Spark
-The global job market is undergoing a profound transformation, driven by factors such as the rapid adoption of artificial intelligence (AI), evolving work models like remote work, and shifting wage structures across industries. In this project, I analyzed global job market trends using PySpark, focusing on salary patterns across careers. The study explored the impact of remote work, regional differences, and industry-specific dynamics on compensation, providing actionable insights to support informed career planning and workforce strategy development.
+The global job market is undergoing a profound transformation, driven by factors such as the rapid adoption of artificial intelligence (AI), evolving work models like remote work, and shifting wage structures across industries. In this project, me and my teammate analyzed global job market trends using PySpark, focusing on salary patterns across careers. The study explored the impact of remote work, regional differences, and industry-specific dynamics on compensation, providing actionable insights to support informed career planning and workforce strategy development.
 
 - Language: Python
-- Tools: PySpark, 
+- Tools: Pandas, PySpark, Plotly
 
+::: {.columns}
 
-[Read More](AD616.qmd){.btn .btn-primary}
+::: {.column width="50%"}
+![](images/SalarybyOccupation.jpg){width=100%}
+:::
 
+::: {.column width="50%"}
+![](images/salarydist.png){width=100%}
+:::
+
+:::
 
 ## Database design
 

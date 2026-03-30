@@ -13,6 +13,9 @@ website:
             href: marketing_analytics.qmd                    
           - text: Cruise Booking Cancellation Analysis       
             href: classification.qmd
+      - href: index.qmd#web-analytics
+        text: Web Analytics
+
 
 format:
   html:

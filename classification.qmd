@@ -24,9 +24,9 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import re
 from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
+from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
 ```
@@ -283,6 +283,28 @@ print(f"Test Accuracy: {test_accuracy_bl:.4f}")
 
 **Moreover, the similar accuracy rates on the training and test sets indicate that the model effectively captures the underlying patterns in the dataset without signs of overfitting.** This balance suggests that the model generalizes well to unseen data while maintaining its predictive reliability. 
 This balance between improved sensitivity and maintained generalizability enhances the model’s practical value in supporting proactive retention strategies.
+
+```{python}
+y_pred_proba = log_reg.predict_proba(X_test_sk)[:, 1]
+fpr, tpr, thresholds = metrics.roc_curve(y_test, y_pred_proba)
+auc = metrics.roc_auc_score(y_test, y_pred_proba)
+
+plt.figure(figsize=(5, 4))
+plt.plot(fpr, tpr, label='Logistic Regression (AUC = {:.2f})'.format(auc))
+plt.plot([0, 1], [0, 1], 'k--', label='Random Classifier (AUC = 0.50)')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve for Logistic Regression Model')
+plt.legend(loc='lower right')
+plt.tight_layout()
+plt.show()
+```
+
+To **validate the model's predictive power** before applying it to business decisions, I also visualized its performance using an ROC curve.
+
+This ROC curve visually demonstrates our logistic regression model's ability to distinguish between "potential cancelers" and "safe customers." The black dashed line represents a random, "coin-toss" baseline (AUC = 0.50). In contrast, our model's solid line bows significantly toward the top-left corner, achieving an Area Under the Curve (AUC) score of 0.76. **In practical terms, this means that if we randomly select one passenger who actually canceled and one who did not, our model has a 76% chance of correctly telling them apart.**
+
+**This AUC of 0.76 represents an actionable model**. Instead of relying on expensive, inefficient "catch-all" marketing campaigns for every passenger, the marketing team can now proactively identify high-risk customers. By strategically allocating limited retention resources specifically to this at-risk group, Lobster Land can effectively reduce cancellation rates while maximizing its Return on Investment (ROI).
 
 # **Model Interpretation & Marketing Insights**
 
