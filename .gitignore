@@ -1,2 +1,6 @@
 /.quarto/
 .venv/*
+**/*.quarto_ipynb
+venv
+cruise_cancellations.csv
+lobsterland_holiday_sales_data.csv

@@ -1,0 +1,3860 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Furong Wang">
+
+<title>🔍 Cruise Booking Cancellation Analysis – Furong Wang</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Furong Wang</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-marketing-analytics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Marketing Analytics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-marketing-analytics">    
+        <li>
+    <a class="dropdown-item" href="./marketing_analytics.html">
+ <span class="dropdown-text">Lobsterland Consumer Insights</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./classification.html">
+ <span class="dropdown-text">Cruise Booking Cancellation Analysis</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#project-background" id="toc-project-background" class="nav-link active" data-scroll-target="#project-background"><span class="header-section-number">1</span> <strong>Project Background</strong></a></li>
+  <li><a href="#data-preparation-exploration" id="toc-data-preparation-exploration" class="nav-link" data-scroll-target="#data-preparation-exploration"><span class="header-section-number">2</span> <strong>Data Preparation &amp; Exploration</strong></a></li>
+  <li><a href="#examining-correlations" id="toc-examining-correlations" class="nav-link" data-scroll-target="#examining-correlations"><span class="header-section-number">3</span> <strong>Examining Correlations</strong></a></li>
+  <li><a href="#dummifying" id="toc-dummifying" class="nav-link" data-scroll-target="#dummifying"><span class="header-section-number">4</span> <strong>Dummifying</strong></a></li>
+  <li><a href="#data-partition" id="toc-data-partition" class="nav-link" data-scroll-target="#data-partition"><span class="header-section-number">5</span> <strong>Data Partition</strong></a></li>
+  <li><a href="#modeling" id="toc-modeling" class="nav-link" data-scroll-target="#modeling"><span class="header-section-number">6</span> <strong>Modeling</strong></a>
+  <ul class="collapse">
+  <li><a href="#initial-selection-of-dependent-variables" id="toc-initial-selection-of-dependent-variables" class="nav-link" data-scroll-target="#initial-selection-of-dependent-variables"><span class="header-section-number">6.1</span> <strong>Initial Selection of Dependent Variables</strong></a></li>
+  <li><a href="#first-iteration-of-the-model-statsmodels" id="toc-first-iteration-of-the-model-statsmodels" class="nav-link" data-scroll-target="#first-iteration-of-the-model-statsmodels"><span class="header-section-number">6.2</span> <strong>First iteration of the model (statsmodels)</strong></a></li>
+  <li><a href="#another-model-iteration-statsmodels" id="toc-another-model-iteration-statsmodels" class="nav-link" data-scroll-target="#another-model-iteration-statsmodels"><span class="header-section-number">6.3</span> <strong>Another Model Iteration (statsmodels)</strong></a></li>
+  <li><a href="#model-evaluation" id="toc-model-evaluation" class="nav-link" data-scroll-target="#model-evaluation"><span class="header-section-number">6.4</span> <strong>Model Evaluation</strong></a></li>
+  <li><a href="#address-the-imbalance-issue" id="toc-address-the-imbalance-issue" class="nav-link" data-scroll-target="#address-the-imbalance-issue"><span class="header-section-number">6.5</span> <strong>Address the Imbalance Issue</strong></a></li>
+  </ul></li>
+  <li><a href="#model-interpretation-marketing-insights" id="toc-model-interpretation-marketing-insights" class="nav-link" data-scroll-target="#model-interpretation-marketing-insights"><span class="header-section-number">7</span> <strong>Model Interpretation &amp; Marketing Insights</strong></a>
+  <ul class="collapse">
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">7.1</span> <strong>Interpretation</strong></a></li>
+  <li><a href="#suggestions" id="toc-suggestions" class="nav-link" data-scroll-target="#suggestions"><span class="header-section-number">7.2</span> <strong>Suggestions</strong></a></li>
+  <li><a href="#concentrating-marketing-efforts" id="toc-concentrating-marketing-efforts" class="nav-link" data-scroll-target="#concentrating-marketing-efforts"><span class="header-section-number">7.3</span> <strong>Concentrating Marketing Efforts</strong></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">🔍 Cruise Booking Cancellation Analysis</h1>
+<p class="subtitle lead">A Logistic Regression Approach to Predicting Cancellations for Lobster Land Cruises</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Furong Wang </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Boston University
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="ab5ed612" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix, accuracy_score, precision_score, recall_score</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="project-background" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> <strong>Project Background</strong></h1>
+<p>For Lobster Land Cruises, passenger cancellations are a costly and unpredictable issue. The company needed a reliable way to anticipate these cancellations before they happen. In this project, I developed a machine learning classification model to predict which customers are most likely to cancel their bookings. By analyzing historical passenger data and identifying high-risk profiles, this analysis aims to empower the marketing team with actionable, data-driven insights to proactively retain customers and optimize marketing resources.</p>
+</section>
+<section id="data-preparation-exploration" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> <strong>Data Preparation &amp; Exploration</strong></h1>
+<p>First of all, I explored the dataset and prepared it for modeling. <strong>I addressed missing values in the <code>loyalty_status</code> variable by imputing them with “None,”</strong> as these entries represent customers without loyalty status. Next, based on the statistical summary of the dataset, <strong>I identified and handled impossible values in the <code>customer_income</code> variable</strong>. Given that the number of problematic rows was small, I decided to remove them to avoid introducing bias through imputation or substitution, thereby preserving the overall integrity of the dataset.</p>
+<p>Additionally, by checking the values in the <code>canceled</code> variable, I found <strong>a certain degree of class imbalance among the records</strong>: about 72% of bookings were not canceled and 28% were canceled. This imbalance could negatively affect the model’s sensitivity to detecting cancellations and may impact precision and recall scores. <strong>I tried to address this issue by adjusting the class weights in subsequent modeling steps.</strong></p>
+<div id="adf63a29" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations <span class="op">=</span> pd.read_csv(<span class="st">"Datasets/cruise_cancellations.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">age</th>
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<th data-quarto-table-cell-role="th">trip_length</th>
+<th data-quarto-table-cell-role="th">cabin_type</th>
+<th data-quarto-table-cell-role="th">group_size</th>
+<th data-quarto-table-cell-role="th">loyalty_status</th>
+<th data-quarto-table-cell-role="th">paid_in_full</th>
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<th data-quarto-table-cell-role="th">customer_income</th>
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<th data-quarto-table-cell-role="th">phone_verified</th>
+<th data-quarto-table-cell-role="th">has_insurance</th>
+<th data-quarto-table-cell-role="th">on_mailing_list</th>
+<th data-quarto-table-cell-role="th">website_visits_last_month</th>
+<th data-quarto-table-cell-role="th">survey_participation</th>
+<th data-quarto-table-cell-role="th">preferred_contact_method</th>
+<th data-quarto-table-cell-role="th">travel_history_score</th>
+<th data-quarto-table-cell-role="th">referral_source</th>
+<th data-quarto-table-cell-role="th">gift_certificate_used</th>
+<th data-quarto-table-cell-role="th">canceled</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>56</td>
+<td>131</td>
+<td>7</td>
+<td>Oceanview</td>
+<td>5</td>
+<td>NaN</td>
+<td>1</td>
+<td>1</td>
+<td>134181.36</td>
+<td>0.41</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>4</td>
+<td>No</td>
+<td>Phone</td>
+<td>62.70</td>
+<td>Friend</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>69</td>
+<td>293</td>
+<td>5</td>
+<td>Oceanview</td>
+<td>5</td>
+<td>NaN</td>
+<td>1</td>
+<td>2</td>
+<td>104770.24</td>
+<td>0.34</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>No</td>
+<td>Email</td>
+<td>56.59</td>
+<td>Friend</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>46</td>
+<td>171</td>
+<td>7</td>
+<td>Balcony</td>
+<td>3</td>
+<td>NaN</td>
+<td>0</td>
+<td>1</td>
+<td>109135.01</td>
+<td>0.38</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>3</td>
+<td>Yes</td>
+<td>Phone</td>
+<td>57.58</td>
+<td>Ad</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>32</td>
+<td>183</td>
+<td>3</td>
+<td>Balcony</td>
+<td>2</td>
+<td>Silver</td>
+<td>0</td>
+<td>0</td>
+<td>80108.53</td>
+<td>0.58</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>No</td>
+<td>Email</td>
+<td>14.75</td>
+<td>Search Engine</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>60</td>
+<td>364</td>
+<td>10</td>
+<td>Oceanview</td>
+<td>3</td>
+<td>Silver</td>
+<td>0</td>
+<td>2</td>
+<td>73401.55</td>
+<td>0.50</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+<td>Partial</td>
+<td>Phone</td>
+<td>47.49</td>
+<td>Ad</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="bedd1462" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 2000 entries, 0 to 1999
+Data columns (total 20 columns):
+ #   Column                     Non-Null Count  Dtype  
+---  ------                     --------------  -----  
+ 0   age                        2000 non-null   int64  
+ 1   booking_lead_time          2000 non-null   int64  
+ 2   trip_length                2000 non-null   int64  
+ 3   cabin_type                 2000 non-null   str    
+ 4   group_size                 2000 non-null   int64  
+ 5   loyalty_status             1016 non-null   str    
+ 6   paid_in_full               2000 non-null   int64  
+ 7   prior_cruises              2000 non-null   int64  
+ 8   customer_income            2000 non-null   float64
+ 9   email_engagement_score     2000 non-null   float64
+ 10  phone_verified             2000 non-null   int64  
+ 11  has_insurance              2000 non-null   int64  
+ 12  on_mailing_list            2000 non-null   int64  
+ 13  website_visits_last_month  2000 non-null   int64  
+ 14  survey_participation       2000 non-null   str    
+ 15  preferred_contact_method   2000 non-null   str    
+ 16  travel_history_score       2000 non-null   float64
+ 17  referral_source            2000 non-null   str    
+ 18  gift_certificate_used      2000 non-null   int64  
+ 19  canceled                   2000 non-null   int64  
+dtypes: float64(3), int64(12), str(5)
+memory usage: 312.6 KB</code></pre>
+</div>
+</div>
+<div id="208408bc" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations[<span class="st">'canceled'</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>canceled
+0    1447
+1     553
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div id="114fa6e0" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations[<span class="st">'loyalty_status'</span>] <span class="op">=</span> cruise_cancellations[<span class="st">'loyalty_status'</span>].fillna(<span class="st">'None'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="d9e79078" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">age</th>
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<th data-quarto-table-cell-role="th">trip_length</th>
+<th data-quarto-table-cell-role="th">group_size</th>
+<th data-quarto-table-cell-role="th">paid_in_full</th>
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<th data-quarto-table-cell-role="th">customer_income</th>
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<th data-quarto-table-cell-role="th">phone_verified</th>
+<th data-quarto-table-cell-role="th">has_insurance</th>
+<th data-quarto-table-cell-role="th">on_mailing_list</th>
+<th data-quarto-table-cell-role="th">website_visits_last_month</th>
+<th data-quarto-table-cell-role="th">travel_history_score</th>
+<th data-quarto-table-cell-role="th">gift_certificate_used</th>
+<th data-quarto-table-cell-role="th">canceled</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.00000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+<td>2000.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>49.114000</td>
+<td>182.184000</td>
+<td>7.237000</td>
+<td>3.00500</td>
+<td>0.714500</td>
+<td>1.476500</td>
+<td>84527.364645</td>
+<td>0.503105</td>
+<td>0.845500</td>
+<td>0.398500</td>
+<td>0.644500</td>
+<td>2.989500</td>
+<td>50.376555</td>
+<td>0.092000</td>
+<td>0.276500</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>17.926564</td>
+<td>105.209014</td>
+<td>3.151793</td>
+<td>1.46835</td>
+<td>0.451765</td>
+<td>1.204647</td>
+<td>29639.635285</td>
+<td>0.144368</td>
+<td>0.361518</td>
+<td>0.489712</td>
+<td>0.478784</td>
+<td>1.700834</td>
+<td>14.904381</td>
+<td>0.289098</td>
+<td>0.447379</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>18.000000</td>
+<td>1.000000</td>
+<td>3.000000</td>
+<td>1.00000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>-7095.200000</td>
+<td>0.010000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.370000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>34.000000</td>
+<td>92.000000</td>
+<td>5.000000</td>
+<td>2.00000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>64681.840000</td>
+<td>0.400000</td>
+<td>1.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>2.000000</td>
+<td>40.795000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>49.000000</td>
+<td>177.000000</td>
+<td>7.000000</td>
+<td>3.00000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>84033.095000</td>
+<td>0.500000</td>
+<td>1.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>3.000000</td>
+<td>50.535000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>65.000000</td>
+<td>273.250000</td>
+<td>10.000000</td>
+<td>4.00000</td>
+<td>1.000000</td>
+<td>2.000000</td>
+<td>104225.347500</td>
+<td>0.600000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>4.000000</td>
+<td>60.265000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>79.000000</td>
+<td>364.000000</td>
+<td>14.000000</td>
+<td>9.00000</td>
+<td>1.000000</td>
+<td>7.000000</td>
+<td>184530.610000</td>
+<td>0.930000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>10.000000</td>
+<td>100.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="742d027c" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>neg_income <span class="op">=</span> cruise_cancellations.loc[cruise_cancellations[<span class="st">'customer_income'</span>] <span class="op">&lt;</span> <span class="dv">0</span>, <span class="st">'customer_income'</span>].count()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Records with negative spending: </span><span class="sc">{</span>neg_income<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Records with negative spending: 3</code></pre>
+</div>
+</div>
+<div id="6b262826" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations <span class="op">=</span> cruise_cancellations[(cruise_cancellations[<span class="st">'customer_income'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="examining-correlations" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> <strong>Examining Correlations</strong></h1>
+<p>As shown in the correlation matrix below, <strong>there are no strong correlations among the numeric independent variables</strong>. The highest absolute correlation is about 0.08, which is very low. There is no concern about multicollinearity, so I chose to keep all numeric variables for the logistic regression model.</p>
+<div id="2d7af007" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>numeric_vars <span class="op">=</span> cruise_cancellations[[</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'age'</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'booking_lead_time'</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'group_size'</span>, </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'prior_cruises'</span>, </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'customer_income'</span>, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'email_engagement_score'</span>, </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'website_visits_last_month'</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'travel_history_score'</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>]]</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="op">=</span> numeric_vars.corr()</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>correlation_matrix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">age</th>
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<th data-quarto-table-cell-role="th">group_size</th>
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<th data-quarto-table-cell-role="th">customer_income</th>
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<th data-quarto-table-cell-role="th">website_visits_last_month</th>
+<th data-quarto-table-cell-role="th">travel_history_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">age</th>
+<td>1.000000</td>
+<td>0.012926</td>
+<td>0.028357</td>
+<td>-0.012924</td>
+<td>0.043762</td>
+<td>-0.007838</td>
+<td>0.010214</td>
+<td>0.010904</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<td>0.012926</td>
+<td>1.000000</td>
+<td>-0.035961</td>
+<td>0.013892</td>
+<td>-0.017013</td>
+<td>-0.004563</td>
+<td>0.004700</td>
+<td>-0.004476</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">group_size</th>
+<td>0.028357</td>
+<td>-0.035961</td>
+<td>1.000000</td>
+<td>-0.018318</td>
+<td>0.030192</td>
+<td>0.010110</td>
+<td>0.000018</td>
+<td>-0.024376</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<td>-0.012924</td>
+<td>0.013892</td>
+<td>-0.018318</td>
+<td>1.000000</td>
+<td>0.030205</td>
+<td>-0.018867</td>
+<td>0.004294</td>
+<td>0.078444</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">customer_income</th>
+<td>0.043762</td>
+<td>-0.017013</td>
+<td>0.030192</td>
+<td>0.030205</td>
+<td>1.000000</td>
+<td>-0.046670</td>
+<td>0.036546</td>
+<td>-0.029320</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<td>-0.007838</td>
+<td>-0.004563</td>
+<td>0.010110</td>
+<td>-0.018867</td>
+<td>-0.046670</td>
+<td>1.000000</td>
+<td>-0.016543</td>
+<td>0.019920</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">website_visits_last_month</th>
+<td>0.010214</td>
+<td>0.004700</td>
+<td>0.000018</td>
+<td>0.004294</td>
+<td>0.036546</td>
+<td>-0.016543</td>
+<td>1.000000</td>
+<td>-0.006937</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">travel_history_score</th>
+<td>0.010904</td>
+<td>-0.004476</td>
+<td>-0.024376</td>
+<td>0.078444</td>
+<td>-0.029320</td>
+<td>0.019920</td>
+<td>-0.006937</td>
+<td>1.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="dummifying" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> <strong>Dummifying</strong></h1>
+<p>In this step, I dummified the categorical variables that were not already binary-coded (1s and 0s). I set drop_first=True to avoid creating linear dependencies among the input features, ensuring that the model does not suffer from multicollinearity.</p>
+<div id="5bcf1932" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>categorical_cols <span class="op">=</span> [<span class="st">'cabin_type'</span>, <span class="st">'trip_length'</span>, <span class="st">'loyalty_status'</span>, <span class="st">'survey_participation'</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'preferred_contact_method'</span>, <span class="st">'referral_source'</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>cruise_dummified <span class="op">=</span> pd.get_dummies(cruise_cancellations, columns<span class="op">=</span>categorical_cols, drop_first<span class="op">=</span><span class="va">True</span>).astype(<span class="bu">float</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>cruise_dummified.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">age</th>
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<th data-quarto-table-cell-role="th">group_size</th>
+<th data-quarto-table-cell-role="th">paid_in_full</th>
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<th data-quarto-table-cell-role="th">customer_income</th>
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<th data-quarto-table-cell-role="th">phone_verified</th>
+<th data-quarto-table-cell-role="th">has_insurance</th>
+<th data-quarto-table-cell-role="th">on_mailing_list</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">loyalty_status_None</th>
+<th data-quarto-table-cell-role="th">loyalty_status_Platinum</th>
+<th data-quarto-table-cell-role="th">loyalty_status_Silver</th>
+<th data-quarto-table-cell-role="th">survey_participation_Partial</th>
+<th data-quarto-table-cell-role="th">survey_participation_Yes</th>
+<th data-quarto-table-cell-role="th">preferred_contact_method_Phone</th>
+<th data-quarto-table-cell-role="th">preferred_contact_method_Text</th>
+<th data-quarto-table-cell-role="th">referral_source_Friend</th>
+<th data-quarto-table-cell-role="th">referral_source_Search Engine</th>
+<th data-quarto-table-cell-role="th">referral_source_Social Media</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>56.0</td>
+<td>131.0</td>
+<td>5.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>134181.36</td>
+<td>0.41</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>...</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>69.0</td>
+<td>293.0</td>
+<td>5.0</td>
+<td>1.0</td>
+<td>2.0</td>
+<td>104770.24</td>
+<td>0.34</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>...</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>46.0</td>
+<td>171.0</td>
+<td>3.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>109135.01</td>
+<td>0.38</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>...</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>32.0</td>
+<td>183.0</td>
+<td>2.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>80108.53</td>
+<td>0.58</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>...</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>60.0</td>
+<td>364.0</td>
+<td>3.0</td>
+<td>0.0</td>
+<td>2.0</td>
+<td>73401.55</td>
+<td>0.50</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>...</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 31 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="data-partition" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>Data Partition</strong></h1>
+<div id="4781b38e" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>X_logistic <span class="op">=</span> cruise_dummified.drop(<span class="st">'canceled'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>y_logistic <span class="op">=</span> cruise_dummified[<span class="st">'canceled'</span>]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X_logistic, y_logistic, test_size<span class="op">=</span><span class="fl">0.40</span>, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                                    random_state<span class="op">=</span><span class="dv">654</span>, stratify<span class="op">=</span>y_logistic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="modeling" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> <strong>Modeling</strong></h1>
+<section id="initial-selection-of-dependent-variables" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="initial-selection-of-dependent-variables"><span class="header-section-number">6.1</span> <strong>Initial Selection of Dependent Variables</strong></h2>
+<p>In this step, I compared the mean values of the variables after grouping the data by the <code>canceled</code> outcome. Based on the observed differences, I made an early speculation that variables such as <code>booking_lead_time</code>, <code>paid_in_full</code>, <code>customer_income</code>, <code>cabin_type</code>, and <code>loyalty_status</code> may be particularly impactful predictors in our model.</p>
+<div id="76474187" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>group_means <span class="op">=</span> cruise_dummified.groupby(<span class="st">'canceled'</span>).mean().T</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>group_means</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">canceled</th>
+<th data-quarto-table-cell-role="th">0.0</th>
+<th data-quarto-table-cell-role="th">1.0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">age</th>
+<td>49.090657</td>
+<td>49.161232</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">booking_lead_time</th>
+<td>187.815917</td>
+<td>166.715580</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">group_size</th>
+<td>3.000692</td>
+<td>3.016304</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">paid_in_full</th>
+<td>0.773702</td>
+<td>0.559783</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">prior_cruises</th>
+<td>1.487889</td>
+<td>1.445652</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">customer_income</th>
+<td>86411.206554</td>
+<td>80080.975562</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">email_engagement_score</th>
+<td>0.504588</td>
+<td>0.498913</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">phone_verified</th>
+<td>0.838062</td>
+<td>0.864130</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">has_insurance</th>
+<td>0.395848</td>
+<td>0.407609</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">on_mailing_list</th>
+<td>0.653979</td>
+<td>0.621377</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">website_visits_last_month</th>
+<td>2.991003</td>
+<td>2.990942</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">travel_history_score</th>
+<td>50.327246</td>
+<td>50.517482</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">gift_certificate_used</th>
+<td>0.083045</td>
+<td>0.115942</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">cabin_type_Interior</th>
+<td>0.301038</td>
+<td>0.356884</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">cabin_type_Oceanview</th>
+<td>0.294810</td>
+<td>0.269928</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">cabin_type_Suite</th>
+<td>0.096886</td>
+<td>0.077899</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">trip_length_5</th>
+<td>0.232526</td>
+<td>0.233696</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">trip_length_7</th>
+<td>0.311419</td>
+<td>0.311594</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">trip_length_10</th>
+<td>0.217301</td>
+<td>0.181159</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">trip_length_14</th>
+<td>0.096886</td>
+<td>0.099638</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">loyalty_status_None</th>
+<td>0.404152</td>
+<td>0.724638</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">loyalty_status_Platinum</th>
+<td>0.114187</td>
+<td>0.041667</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">loyalty_status_Silver</th>
+<td>0.304498</td>
+<td>0.157609</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">survey_participation_Partial</th>
+<td>0.215225</td>
+<td>0.197464</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">survey_participation_Yes</th>
+<td>0.292734</td>
+<td>0.309783</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">preferred_contact_method_Phone</th>
+<td>0.340484</td>
+<td>0.342391</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">preferred_contact_method_Text</th>
+<td>0.336332</td>
+<td>0.322464</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">referral_source_Friend</th>
+<td>0.231834</td>
+<td>0.269928</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">referral_source_Search Engine</th>
+<td>0.262976</td>
+<td>0.221014</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">referral_source_Social Media</th>
+<td>0.253979</td>
+<td>0.268116</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="first-iteration-of-the-model-statsmodels" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="first-iteration-of-the-model-statsmodels"><span class="header-section-number">6.2</span> <strong>First iteration of the model (statsmodels)</strong></h2>
+<p><strong>I built the first iteration of the logistic regression model using the training data, initially including all available independent variables.</strong> Based on the model summary, the overall classification power was statistically significant, as indicated by a likelihood ratio (LLR) p-value much lower than 0.05. Some features have p-values much higher than 0.05, suggesting they are not strong predictors of booking cancellations.</p>
+<div id="f36d56cf" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>X_train_sm1 <span class="op">=</span> sm.add_constant(X_train)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> sm.Logit(y_train, X_train_sm1)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>result_sm1 <span class="op">=</span> logit_model.fit()</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result_sm1.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.509392
+         Iterations 6
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:               canceled   No. Observations:                 1198
+Model:                          Logit   Df Residuals:                     1167
+Method:                           MLE   Df Model:                           30
+Date:                Mon, 30 Mar 2026   Pseudo R-squ.:                  0.1358
+Time:                        10:41:29   Log-Likelihood:                -610.25
+converged:                       True   LL-Null:                       -706.12
+Covariance Type:            nonrobust   LLR p-value:                 1.715e-25
+==================================================================================================
+                                     coef    std err          z      P&gt;|z|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------
+const                             -0.0195      0.662     -0.029      0.977      -1.316       1.277
+age                               -0.0006      0.004     -0.148      0.882      -0.009       0.007
+booking_lead_time                 -0.0026      0.001     -3.711      0.000      -0.004      -0.001
+group_size                         0.0061      0.047      0.129      0.898      -0.087       0.099
+paid_in_full                      -1.1592      0.152     -7.615      0.000      -1.458      -0.861
+prior_cruises                     -0.0220      0.061     -0.364      0.716      -0.141       0.097
+customer_income                -9.252e-06   2.46e-06     -3.760      0.000   -1.41e-05   -4.43e-06
+email_engagement_score             0.0534      0.506      0.106      0.916      -0.938       1.044
+phone_verified                     0.0732      0.199      0.368      0.713      -0.317       0.463
+has_insurance                      0.1305      0.145      0.900      0.368      -0.154       0.415
+on_mailing_list                   -0.0906      0.148     -0.611      0.541      -0.381       0.200
+website_visits_last_month          0.0449      0.042      1.057      0.290      -0.038       0.128
+travel_history_score               0.0011      0.005      0.222      0.825      -0.008       0.011
+gift_certificate_used              0.3687      0.229      1.613      0.107      -0.079       0.817
+cabin_type_Interior                0.4552      0.180      2.523      0.012       0.102       0.809
+cabin_type_Oceanview              -0.0085      0.187     -0.045      0.964      -0.375       0.358
+cabin_type_Suite                  -0.1946      0.278     -0.701      0.484      -0.739       0.350
+trip_length_5                     -0.0809      0.230     -0.353      0.724      -0.531       0.369
+trip_length_7                     -0.1458      0.217     -0.671      0.502      -0.572       0.280
+trip_length_10                    -0.2732      0.241     -1.134      0.257      -0.745       0.199
+trip_length_14                    -0.2432      0.294     -0.827      0.408      -0.819       0.333
+loyalty_status_None                1.5505      0.242      6.395      0.000       1.075       2.026
+loyalty_status_Platinum           -0.1285      0.371     -0.346      0.729      -0.856       0.599
+loyalty_status_Silver              0.3152      0.270      1.167      0.243      -0.214       0.844
+survey_participation_Partial       0.0759      0.187      0.407      0.684      -0.290       0.442
+survey_participation_Yes           0.1614      0.167      0.965      0.334      -0.166       0.489
+preferred_contact_method_Phone    -0.0226      0.172     -0.131      0.896      -0.360       0.315
+preferred_contact_method_Text     -0.3035      0.176     -1.724      0.085      -0.648       0.041
+referral_source_Friend            -0.0205      0.203     -0.101      0.919      -0.418       0.377
+referral_source_Search Engine     -0.2268      0.203     -1.118      0.263      -0.624       0.171
+referral_source_Social Media      -0.1102      0.197     -0.560      0.576      -0.496       0.276
+==================================================================================================</code></pre>
+</div>
+</div>
+<p>Consequently, I would <strong>remove the numerical variables with high p-values</strong> (<code>age</code>, <code>prior_cruises</code>, <code>email_engagement_score</code>, <code>website_visits_last_month</code> and <code>travel_history_score</code>), as well as <strong>categorical variables where all levels showed high p-values</strong> (<code>group_size</code>, <code>phone_verified</code>, <code>has_insurance</code>, <code>on_mailing_list</code>, <code>gift_certificate_used</code>, <code>trip_length</code>, <code>survey_participation</code>, <code>preferred_contact_method</code> and <code>referral_source</code>).</p>
+</section>
+<section id="another-model-iteration-statsmodels" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="another-model-iteration-statsmodels"><span class="header-section-number">6.3</span> <strong>Another Model Iteration (statsmodels)</strong></h2>
+<p><strong>Then, I performed another model iteration.</strong> In this iteration, I used only the independent variables that remained after the first model refinement. As shown in the updated model summary, <strong>the LLR p-value has declined from 1.715e-25 to 9.926e-34</strong>. This indicates that by limiting our inputs to only the features that significantly impact booking cancellations, I have developed a better-fitting and more compact model.</p>
+<p>The summary below tells us that:</p>
+<ul>
+<li><p>For each additional day that a customer books in advance (<code>booking_lead_time</code>), the log odds of a cruise booking being canceled decrease by 0.0025, holding all other variables constant.</p></li>
+<li><p>Having paid the full amount for the cruise (<code>paid_in_full</code>) decreases the log odds of cancellation by 1.1325 compared to customers who have not paid in full, holding all other variables constant.</p></li>
+<li><p>For every additional dollar in customer income (customer_income), the log odds of cancellation decrease by 8.916e-06, holding all other variables constant.</p></li>
+<li><p>Compared to customers who booked a <code>Balcony cabin</code>, customers booking an <code>Interior cabin</code> (<code>cabin_type_Interior</code>) experience an increase of 0.4338 in the log odds of cancellation, holding all other variables constant.</p></li>
+<li><p>Compared to customers with <code>Gold</code> loyalty status, customers <code>without any loyalty status</code> (<code>loyalty_status_None</code>) experience an increase of 1.5381 in the log odds of cancellation, holding all other variables constant.</p></li>
+</ul>
+<div id="3e95c394" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>X_train_sm2 <span class="op">=</span> X_train[[<span class="st">'booking_lead_time'</span>, <span class="st">'paid_in_full'</span>, <span class="st">'customer_income'</span>, </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>X_train_sm2 <span class="op">=</span> sm.add_constant(X_train_sm2)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>logit_model_sm2 <span class="op">=</span> sm.Logit(y_train, X_train_sm2)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>result_sm2 <span class="op">=</span> logit_model_sm2.fit()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result_sm2.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.514877
+         Iterations 6
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:               canceled   No. Observations:                 1198
+Model:                          Logit   Df Residuals:                     1188
+Method:                           MLE   Df Model:                            9
+Date:                Mon, 30 Mar 2026   Pseudo R-squ.:                  0.1265
+Time:                        10:41:29   Log-Likelihood:                -616.82
+converged:                       True   LL-Null:                       -706.12
+Covariance Type:            nonrobust   LLR p-value:                 9.926e-34
+===========================================================================================
+                              coef    std err          z      P&gt;|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------
+const                      -0.0693      0.350     -0.198      0.843      -0.755       0.616
+booking_lead_time          -0.0025      0.001     -3.624      0.000      -0.004      -0.001
+paid_in_full               -1.1325      0.149     -7.585      0.000      -1.425      -0.840
+customer_income         -8.916e-06   2.41e-06     -3.696      0.000   -1.36e-05   -4.19e-06
+cabin_type_Interior         0.4338      0.178      2.436      0.015       0.085       0.783
+cabin_type_Oceanview       -0.0275      0.185     -0.149      0.882      -0.389       0.334
+cabin_type_Suite           -0.2020      0.275     -0.735      0.462      -0.740       0.336
+loyalty_status_None         1.5381      0.240      6.412      0.000       1.068       2.008
+loyalty_status_Platinum    -0.0968      0.367     -0.264      0.792      -0.815       0.622
+loyalty_status_Silver       0.2951      0.267      1.104      0.270      -0.229       0.819
+===========================================================================================</code></pre>
+</div>
+</div>
+</section>
+<section id="model-evaluation" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="model-evaluation"><span class="header-section-number">6.4</span> <strong>Model Evaluation</strong></h2>
+<p>Next, I built another version of our model using scikit-learn to evaluate its performance.</p>
+<div id="4f5d213f" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>X_train_sk <span class="op">=</span> X_train[[<span class="st">'booking_lead_time'</span>, <span class="st">'paid_in_full'</span>, <span class="st">'customer_income'</span>, </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>X_test_sk <span class="op">=</span> X_test[[<span class="st">'booking_lead_time'</span>, <span class="st">'paid_in_full'</span>, <span class="st">'customer_income'</span>, </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="675ed378" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>log_reg <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">10000</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>log_reg.fit(X_train_sk, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+#sk-container-id-1.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+#sk-container-id-1.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+#sk-container-id-1 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LogisticRegression(max_iter=10000)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LogisticRegression</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html">?<span>Documentation for LogisticRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=penalty,-%7B%27l1%27%2C%20%27l2%27%2C%20%27elasticnet%27%2C%20None%7D%2C%20default%3D%27l2%27" class="param-doc-link" rel="noreferrer" target="_blank">penalty <span class="param-doc-description">penalty: {'l1', 'l2', 'elasticnet', None}, default='l2'<br>
+<br>
+Specify the norm of the penalty:<br>
+<br>
+- `None`: no penalty is added;<br>
+- `'l2'`: add a L2 penalty term and it is the default choice;<br>
+- `'l1'`: add a L1 penalty term;<br>
+- `'elasticnet'`: both L1 and L2 penalty terms are added.<br>
+<br>
+.. warning::<br>
+Some penalties may not work with some solvers. See the parameter<br>
+`solver` below, to know the compatibility between the penalty and<br>
+solver.<br>
+<br>
+.. versionadded:: 0.19<br>
+l1 penalty with SAGA solver (allowing 'multinomial' + L1)<br>
+<br>
+.. deprecated:: 1.8<br>
+`penalty` was deprecated in version 1.8 and will be removed in 1.10.<br>
+Use `l1_ratio` instead. `l1_ratio=0` for `penalty='l2'`, `l1_ratio=1` for<br>
+`penalty='l1'` and `l1_ratio` set to any float between 0 and 1 for<br>
+`'penalty='elasticnet'`.</span></a></td>
+<td class="value">'deprecated'</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=C,-float%2C%20default%3D1.0" class="param-doc-link" rel="noreferrer" target="_blank">C <span class="param-doc-description">C: float, default=1.0<br>
+<br>
+Inverse of regularization strength; must be a positive float.<br>
+Like in support vector machines, smaller values specify stronger<br>
+regularization. `C=np.inf` results in unpenalized logistic regression.<br>
+For a visual example on the effect of tuning the `C` parameter<br>
+with an L1 penalty, see:<br>
+:ref:`sphx_glr_auto_examples_linear_model_plot_logistic_path.py`.</span></a></td>
+<td class="value">1.0</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=l1_ratio,-float%2C%20default%3D0.0" class="param-doc-link" rel="noreferrer" target="_blank">l1_ratio <span class="param-doc-description">l1_ratio: float, default=0.0<br>
+<br>
+The Elastic-Net mixing parameter, with `0 &lt;= l1_ratio &lt;= 1`. Setting<br>
+`l1_ratio=1` gives a pure L1-penalty, setting `l1_ratio=0` a pure L2-penalty.<br>
+Any value between 0 and 1 gives an Elastic-Net penalty of the form<br>
+`l1_ratio * L1 + (1 - l1_ratio) * L2`.<br>
+<br>
+.. warning::<br>
+Certain values of `l1_ratio`, i.e. some penalties, may not work with some<br>
+solvers. See the parameter `solver` below, to know the compatibility between<br>
+the penalty and solver.<br>
+<br>
+.. versionchanged:: 1.8<br>
+Default value changed from None to 0.0.<br>
+<br>
+.. deprecated:: 1.8<br>
+`None` is deprecated and will be removed in version 1.10. Always use<br>
+`l1_ratio` to specify the penalty type.</span></a></td>
+<td class="value">0.0</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=dual,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">dual <span class="param-doc-description">dual: bool, default=False<br>
+<br>
+Dual (constrained) or primal (regularized, see also<br>
+:ref:`this equation <regularized-logistic-loss>`) formulation. Dual formulation<br>
+is only implemented for l2 penalty with liblinear solver. Prefer `dual=False`<br>
+when n_samples &gt; n_features.</regularized-logistic-loss></span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=tol,-float%2C%20default%3D1e-4" class="param-doc-link" rel="noreferrer" target="_blank">tol <span class="param-doc-description">tol: float, default=1e-4<br>
+<br>
+Tolerance for stopping criteria.</span></a></td>
+<td class="value">0.0001</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=fit_intercept,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">fit_intercept <span class="param-doc-description">fit_intercept: bool, default=True<br>
+<br>
+Specifies if a constant (a.k.a. bias or intercept) should be<br>
+added to the decision function.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=intercept_scaling,-float%2C%20default%3D1" class="param-doc-link" rel="noreferrer" target="_blank">intercept_scaling <span class="param-doc-description">intercept_scaling: float, default=1<br>
+<br>
+Useful only when the solver `liblinear` is used<br>
+and `self.fit_intercept` is set to `True`. In this case, `x` becomes<br>
+`[x, self.intercept_scaling]`,<br>
+i.e. a "synthetic" feature with constant value equal to<br>
+`intercept_scaling` is appended to the instance vector.<br>
+The intercept becomes<br>
+``intercept_scaling * synthetic_feature_weight``.<br>
+<br>
+.. note::<br>
+The synthetic feature weight is subject to L1 or L2<br>
+regularization as all other features.<br>
+To lessen the effect of regularization on synthetic feature weight<br>
+(and therefore on the intercept) `intercept_scaling` has to be increased.</span></a></td>
+<td class="value">1</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=class_weight,-dict%20or%20%27balanced%27%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">class_weight <span class="param-doc-description">class_weight: dict or 'balanced', default=None<br>
+<br>
+Weights associated with classes in the form ``{class_label: weight}``.<br>
+If not given, all classes are supposed to have weight one.<br>
+<br>
+The "balanced" mode uses the values of y to automatically adjust<br>
+weights inversely proportional to class frequencies in the input data<br>
+as ``n_samples / (n_classes * np.bincount(y))``.<br>
+<br>
+Note that these weights will be multiplied with sample_weight (passed<br>
+through the fit method) if sample_weight is specified.<br>
+<br>
+.. versionadded:: 0.17<br>
+*class_weight='balanced'*</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=random_state,-int%2C%20RandomState%20instance%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">random_state <span class="param-doc-description">random_state: int, RandomState instance, default=None<br>
+<br>
+Used when ``solver`` == 'sag', 'saga' or 'liblinear' to shuffle the<br>
+data. See :term:`Glossary <random_state>` for details.</random_state></span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=solver,-%7B%27lbfgs%27%2C%20%27liblinear%27%2C%20%27newton-cg%27%2C%20%27newton-cholesky%27%2C%20%27sag%27%2C%20%27saga%27%7D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20default%3D%27lbfgs%27" class="param-doc-link" rel="noreferrer" target="_blank">solver <span class="param-doc-description">solver: {'lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga'}, default='lbfgs'<br>
+<br>
+Algorithm to use in the optimization problem. Default is 'lbfgs'.<br>
+To choose a solver, you might want to consider the following aspects:<br>
+<br>
+- 'lbfgs' is a good default solver because it works reasonably well for a wide<br>
+class of problems.<br>
+- For :term:`multiclass` problems (`n_classes &gt;= 3`), all solvers except<br>
+'liblinear' minimize the full multinomial loss, 'liblinear' will raise an<br>
+error.<br>
+- 'newton-cholesky' is a good choice for<br>
+`n_samples` &gt;&gt; `n_features * n_classes`, especially with one-hot encoded<br>
+categorical features with rare categories. Be aware that the memory usage<br>
+of this solver has a quadratic dependency on `n_features * n_classes`<br>
+because it explicitly computes the full Hessian matrix.<br>
+- For small datasets, 'liblinear' is a good choice, whereas 'sag'<br>
+and 'saga' are faster for large ones;<br>
+- 'liblinear' can only handle binary classification by default. To apply a<br>
+one-versus-rest scheme for the multiclass setting one can wrap it with the<br>
+:class:`~sklearn.multiclass.OneVsRestClassifier`.<br>
+<br>
+.. warning::<br>
+The choice of the algorithm depends on the penalty chosen (`l1_ratio=0`<br>
+for L2-penalty, `l1_ratio=1` for L1-penalty and `0 &lt; l1_ratio &lt; 1` for<br>
+Elastic-Net) and on (multinomial) multiclass support:<br>
+<br>
+================= ======================== ======================<br>
+solver l1_ratio multinomial multiclass<br>
+================= ======================== ======================<br>
+'lbfgs' l1_ratio=0 yes<br>
+'liblinear' l1_ratio=1 or l1_ratio=0 no<br>
+'newton-cg' l1_ratio=0 yes<br>
+'newton-cholesky' l1_ratio=0 yes<br>
+'sag' l1_ratio=0 yes<br>
+'saga' 0&lt;=l1_ratio&lt;=1 yes<br>
+================= ======================== ======================<br>
+<br>
+.. note::<br>
+'sag' and 'saga' fast convergence is only guaranteed on features<br>
+with approximately the same scale. You can preprocess the data with<br>
+a scaler from :mod:`sklearn.preprocessing`.<br>
+<br>
+.. seealso::<br>
+Refer to the :ref:`User Guide <logistic_regression>` for more<br>
+information regarding :class:`LogisticRegression` and more specifically the<br>
+:ref:`Table <logistic_regression_solvers>`<br>
+summarizing solver/penalty supports.<br>
+<br>
+.. versionadded:: 0.17<br>
+Stochastic Average Gradient (SAG) descent solver. Multinomial support in<br>
+version 0.18.<br>
+.. versionadded:: 0.19<br>
+SAGA solver.<br>
+.. versionchanged:: 0.22<br>
+The default solver changed from 'liblinear' to 'lbfgs' in 0.22.<br>
+.. versionadded:: 1.2<br>
+newton-cholesky solver. Multinomial support in version 1.6.</logistic_regression_solvers></logistic_regression></span></a></td>
+<td class="value">'lbfgs'</td>
+</tr>
+<tr class="user-set odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=max_iter,-int%2C%20default%3D100" class="param-doc-link" rel="noreferrer" target="_blank">max_iter <span class="param-doc-description">max_iter: int, default=100<br>
+<br>
+Maximum number of iterations taken for the solvers to converge.</span></a></td>
+<td class="value">10000</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=verbose,-int%2C%20default%3D0" class="param-doc-link" rel="noreferrer" target="_blank">verbose <span class="param-doc-description">verbose: int, default=0<br>
+<br>
+For the liblinear and lbfgs solvers set verbose to any positive<br>
+number for verbosity.</span></a></td>
+<td class="value">0</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=warm_start,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">warm_start <span class="param-doc-description">warm_start: bool, default=False<br>
+<br>
+When set to True, reuse the solution of the previous call to fit as<br>
+initialization, otherwise, just erase the previous solution.<br>
+Useless for liblinear solver. See :term:`the Glossary <warm_start>`.<br>
+<br>
+.. versionadded:: 0.17<br>
+*warm_start* to support *lbfgs*, *newton-cg*, *sag*, *saga* solvers.</warm_start></span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description">n_jobs: int, default=None<br>
+<br>
+Does not have any effect.<br>
+<br>
+.. deprecated:: 1.8<br>
+`n_jobs` is deprecated in version 1.8 and will be removed in 1.10.</span></a></td>
+<td class="value">None</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-1');</script>
+</div>
+</div>
+<div id="8aecde8e" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>y_pred_logistic <span class="op">=</span> log_reg.predict(X_test_sk)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>cm_logistic <span class="op">=</span> confusion_matrix(y_test, y_pred_logistic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ecd106ec" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">4</span>))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm_logistic, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">'d'</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>],</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>            yticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>])</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix of Logistic Regression Model"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, pad<span class="op">=</span><span class="dv">10</span>) </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Predicted"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, labelpad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Actual"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, labelpad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="classification_files/figure-html/cell-19-output-1.png" width="459" height="375" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="dee97cfc" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> accuracy_score(y_test, y_pred_logistic)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="op">=</span> recall_score(y_test, y_pred_logistic)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>tn, fp, fn, tp <span class="op">=</span> cm_logistic.ravel()</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>specificity <span class="op">=</span> tn <span class="op">/</span> (tn <span class="op">+</span> fp) <span class="cf">if</span> (tn <span class="op">+</span> fp) <span class="op">!=</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(y_test, y_pred_logistic)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>balanced_accuracy <span class="op">=</span> (sensitivity <span class="op">+</span> specificity) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's accuracy rate is </span><span class="sc">{</span>accuracy<span class="sc">:.2%}</span><span class="ss">."</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's sensitivity rate is </span><span class="sc">{</span>sensitivity<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's specificity rate is </span><span class="sc">{</span>specificity<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's precision is </span><span class="sc">{</span>precision<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's balanced accuracy is </span><span class="sc">{</span>balanced_accuracy<span class="sc">:.2%}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The model's accuracy rate is 74.22%.
+The model's sensitivity rate is 27.15%
+The model's specificity rate is 92.21%
+The model's precision is 57.14%
+The model's balanced accuracy is 59.68%</code></pre>
+</div>
+</div>
+<div id="ccd41c2c" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> log_reg.score(X_train_sk, y_train)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> log_reg.score(X_test_sk, y_test)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training Accuracy: </span><span class="sc">{</span>train_accuracy<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Accuracy: </span><span class="sc">{</span>test_accuracy<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training Accuracy: 0.7312
+Test Accuracy: 0.7422</code></pre>
+</div>
+</div>
+<p>These results imply that while the model is conservative and favors predicting non-cancellations (leading to high specificity), <strong>it misses a substantial portion of actual cancellations</strong> (low sensitivity). In business terms, <strong>this could mean Lobster Land risks underestimating the number of cancellations, which might impact operational planning and revenue forecasting.</strong></p>
+<p>Furthermore, I compared the accuracy on the training and test sets. The training set accuracy is 73.12%, while the test set accuracy is 74.22%. Since the two accuracy rates are very close, it suggests that this model has not been overfitted to the training data.</p>
+</section>
+<section id="address-the-imbalance-issue" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="address-the-imbalance-issue"><span class="header-section-number">6.5</span> <strong>Address the Imbalance Issue</strong></h2>
+<p>To address the class imbalance issue, I applied the <code>class_weight</code> parameter in the logistic regression model. This parameter allows us to assign different weights to the classes, which can help improve the model’s sensitivity to the minority class (cancellations). By setting <code>class_weight='balanced'</code>, I let scikit-learn automatically adjust the weights inversely proportional to class frequencies in the input data.</p>
+<div id="c922fb00" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>log_reg_bl <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, class_weight<span class="op">=</span><span class="st">'balanced'</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>log_reg_bl.fit(X_train_sk, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<style>#sk-container-id-2 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+#sk-container-id-2.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+#sk-container-id-2.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+#sk-container-id-2 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-2 pre {
+  padding: 0;
+}
+
+#sk-container-id-2 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-2 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-2 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-2 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-2 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-2 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-2 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-2 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-2 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+#sk-container-id-2 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-2 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label label.sk-toggleable__label,
+#sk-container-id-2 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-2 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-2 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+#sk-container-id-2 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-2 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-2 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-2 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-2 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LogisticRegression(class_weight='balanced', max_iter=1000)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LogisticRegression</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html">?<span>Documentation for LogisticRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=penalty,-%7B%27l1%27%2C%20%27l2%27%2C%20%27elasticnet%27%2C%20None%7D%2C%20default%3D%27l2%27" class="param-doc-link" rel="noreferrer" target="_blank">penalty <span class="param-doc-description">penalty: {'l1', 'l2', 'elasticnet', None}, default='l2'<br>
+<br>
+Specify the norm of the penalty:<br>
+<br>
+- `None`: no penalty is added;<br>
+- `'l2'`: add a L2 penalty term and it is the default choice;<br>
+- `'l1'`: add a L1 penalty term;<br>
+- `'elasticnet'`: both L1 and L2 penalty terms are added.<br>
+<br>
+.. warning::<br>
+Some penalties may not work with some solvers. See the parameter<br>
+`solver` below, to know the compatibility between the penalty and<br>
+solver.<br>
+<br>
+.. versionadded:: 0.19<br>
+l1 penalty with SAGA solver (allowing 'multinomial' + L1)<br>
+<br>
+.. deprecated:: 1.8<br>
+`penalty` was deprecated in version 1.8 and will be removed in 1.10.<br>
+Use `l1_ratio` instead. `l1_ratio=0` for `penalty='l2'`, `l1_ratio=1` for<br>
+`penalty='l1'` and `l1_ratio` set to any float between 0 and 1 for<br>
+`'penalty='elasticnet'`.</span></a></td>
+<td class="value">'deprecated'</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=C,-float%2C%20default%3D1.0" class="param-doc-link" rel="noreferrer" target="_blank">C <span class="param-doc-description">C: float, default=1.0<br>
+<br>
+Inverse of regularization strength; must be a positive float.<br>
+Like in support vector machines, smaller values specify stronger<br>
+regularization. `C=np.inf` results in unpenalized logistic regression.<br>
+For a visual example on the effect of tuning the `C` parameter<br>
+with an L1 penalty, see:<br>
+:ref:`sphx_glr_auto_examples_linear_model_plot_logistic_path.py`.</span></a></td>
+<td class="value">1.0</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=l1_ratio,-float%2C%20default%3D0.0" class="param-doc-link" rel="noreferrer" target="_blank">l1_ratio <span class="param-doc-description">l1_ratio: float, default=0.0<br>
+<br>
+The Elastic-Net mixing parameter, with `0 &lt;= l1_ratio &lt;= 1`. Setting<br>
+`l1_ratio=1` gives a pure L1-penalty, setting `l1_ratio=0` a pure L2-penalty.<br>
+Any value between 0 and 1 gives an Elastic-Net penalty of the form<br>
+`l1_ratio * L1 + (1 - l1_ratio) * L2`.<br>
+<br>
+.. warning::<br>
+Certain values of `l1_ratio`, i.e. some penalties, may not work with some<br>
+solvers. See the parameter `solver` below, to know the compatibility between<br>
+the penalty and solver.<br>
+<br>
+.. versionchanged:: 1.8<br>
+Default value changed from None to 0.0.<br>
+<br>
+.. deprecated:: 1.8<br>
+`None` is deprecated and will be removed in version 1.10. Always use<br>
+`l1_ratio` to specify the penalty type.</span></a></td>
+<td class="value">0.0</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=dual,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">dual <span class="param-doc-description">dual: bool, default=False<br>
+<br>
+Dual (constrained) or primal (regularized, see also<br>
+:ref:`this equation <regularized-logistic-loss>`) formulation. Dual formulation<br>
+is only implemented for l2 penalty with liblinear solver. Prefer `dual=False`<br>
+when n_samples &gt; n_features.</regularized-logistic-loss></span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=tol,-float%2C%20default%3D1e-4" class="param-doc-link" rel="noreferrer" target="_blank">tol <span class="param-doc-description">tol: float, default=1e-4<br>
+<br>
+Tolerance for stopping criteria.</span></a></td>
+<td class="value">0.0001</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=fit_intercept,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">fit_intercept <span class="param-doc-description">fit_intercept: bool, default=True<br>
+<br>
+Specifies if a constant (a.k.a. bias or intercept) should be<br>
+added to the decision function.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=intercept_scaling,-float%2C%20default%3D1" class="param-doc-link" rel="noreferrer" target="_blank">intercept_scaling <span class="param-doc-description">intercept_scaling: float, default=1<br>
+<br>
+Useful only when the solver `liblinear` is used<br>
+and `self.fit_intercept` is set to `True`. In this case, `x` becomes<br>
+`[x, self.intercept_scaling]`,<br>
+i.e. a "synthetic" feature with constant value equal to<br>
+`intercept_scaling` is appended to the instance vector.<br>
+The intercept becomes<br>
+``intercept_scaling * synthetic_feature_weight``.<br>
+<br>
+.. note::<br>
+The synthetic feature weight is subject to L1 or L2<br>
+regularization as all other features.<br>
+To lessen the effect of regularization on synthetic feature weight<br>
+(and therefore on the intercept) `intercept_scaling` has to be increased.</span></a></td>
+<td class="value">1</td>
+</tr>
+<tr class="user-set even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=class_weight,-dict%20or%20%27balanced%27%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">class_weight <span class="param-doc-description">class_weight: dict or 'balanced', default=None<br>
+<br>
+Weights associated with classes in the form ``{class_label: weight}``.<br>
+If not given, all classes are supposed to have weight one.<br>
+<br>
+The "balanced" mode uses the values of y to automatically adjust<br>
+weights inversely proportional to class frequencies in the input data<br>
+as ``n_samples / (n_classes * np.bincount(y))``.<br>
+<br>
+Note that these weights will be multiplied with sample_weight (passed<br>
+through the fit method) if sample_weight is specified.<br>
+<br>
+.. versionadded:: 0.17<br>
+*class_weight='balanced'*</span></a></td>
+<td class="value">'balanced'</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=random_state,-int%2C%20RandomState%20instance%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">random_state <span class="param-doc-description">random_state: int, RandomState instance, default=None<br>
+<br>
+Used when ``solver`` == 'sag', 'saga' or 'liblinear' to shuffle the<br>
+data. See :term:`Glossary <random_state>` for details.</random_state></span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=solver,-%7B%27lbfgs%27%2C%20%27liblinear%27%2C%20%27newton-cg%27%2C%20%27newton-cholesky%27%2C%20%27sag%27%2C%20%27saga%27%7D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20default%3D%27lbfgs%27" class="param-doc-link" rel="noreferrer" target="_blank">solver <span class="param-doc-description">solver: {'lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga'}, default='lbfgs'<br>
+<br>
+Algorithm to use in the optimization problem. Default is 'lbfgs'.<br>
+To choose a solver, you might want to consider the following aspects:<br>
+<br>
+- 'lbfgs' is a good default solver because it works reasonably well for a wide<br>
+class of problems.<br>
+- For :term:`multiclass` problems (`n_classes &gt;= 3`), all solvers except<br>
+'liblinear' minimize the full multinomial loss, 'liblinear' will raise an<br>
+error.<br>
+- 'newton-cholesky' is a good choice for<br>
+`n_samples` &gt;&gt; `n_features * n_classes`, especially with one-hot encoded<br>
+categorical features with rare categories. Be aware that the memory usage<br>
+of this solver has a quadratic dependency on `n_features * n_classes`<br>
+because it explicitly computes the full Hessian matrix.<br>
+- For small datasets, 'liblinear' is a good choice, whereas 'sag'<br>
+and 'saga' are faster for large ones;<br>
+- 'liblinear' can only handle binary classification by default. To apply a<br>
+one-versus-rest scheme for the multiclass setting one can wrap it with the<br>
+:class:`~sklearn.multiclass.OneVsRestClassifier`.<br>
+<br>
+.. warning::<br>
+The choice of the algorithm depends on the penalty chosen (`l1_ratio=0`<br>
+for L2-penalty, `l1_ratio=1` for L1-penalty and `0 &lt; l1_ratio &lt; 1` for<br>
+Elastic-Net) and on (multinomial) multiclass support:<br>
+<br>
+================= ======================== ======================<br>
+solver l1_ratio multinomial multiclass<br>
+================= ======================== ======================<br>
+'lbfgs' l1_ratio=0 yes<br>
+'liblinear' l1_ratio=1 or l1_ratio=0 no<br>
+'newton-cg' l1_ratio=0 yes<br>
+'newton-cholesky' l1_ratio=0 yes<br>
+'sag' l1_ratio=0 yes<br>
+'saga' 0&lt;=l1_ratio&lt;=1 yes<br>
+================= ======================== ======================<br>
+<br>
+.. note::<br>
+'sag' and 'saga' fast convergence is only guaranteed on features<br>
+with approximately the same scale. You can preprocess the data with<br>
+a scaler from :mod:`sklearn.preprocessing`.<br>
+<br>
+.. seealso::<br>
+Refer to the :ref:`User Guide <logistic_regression>` for more<br>
+information regarding :class:`LogisticRegression` and more specifically the<br>
+:ref:`Table <logistic_regression_solvers>`<br>
+summarizing solver/penalty supports.<br>
+<br>
+.. versionadded:: 0.17<br>
+Stochastic Average Gradient (SAG) descent solver. Multinomial support in<br>
+version 0.18.<br>
+.. versionadded:: 0.19<br>
+SAGA solver.<br>
+.. versionchanged:: 0.22<br>
+The default solver changed from 'liblinear' to 'lbfgs' in 0.22.<br>
+.. versionadded:: 1.2<br>
+newton-cholesky solver. Multinomial support in version 1.6.</logistic_regression_solvers></logistic_regression></span></a></td>
+<td class="value">'lbfgs'</td>
+</tr>
+<tr class="user-set odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=max_iter,-int%2C%20default%3D100" class="param-doc-link" rel="noreferrer" target="_blank">max_iter <span class="param-doc-description">max_iter: int, default=100<br>
+<br>
+Maximum number of iterations taken for the solvers to converge.</span></a></td>
+<td class="value">1000</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=verbose,-int%2C%20default%3D0" class="param-doc-link" rel="noreferrer" target="_blank">verbose <span class="param-doc-description">verbose: int, default=0<br>
+<br>
+For the liblinear and lbfgs solvers set verbose to any positive<br>
+number for verbosity.</span></a></td>
+<td class="value">0</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=warm_start,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">warm_start <span class="param-doc-description">warm_start: bool, default=False<br>
+<br>
+When set to True, reuse the solution of the previous call to fit as<br>
+initialization, otherwise, just erase the previous solution.<br>
+Useless for liblinear solver. See :term:`the Glossary <warm_start>`.<br>
+<br>
+.. versionadded:: 0.17<br>
+*warm_start* to support *lbfgs*, *newton-cg*, *sag*, *saga* solvers.</warm_start></span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.linear_model.LogisticRegression.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description">n_jobs: int, default=None<br>
+<br>
+Does not have any effect.<br>
+<br>
+.. deprecated:: 1.8<br>
+`n_jobs` is deprecated in version 1.8 and will be removed in 1.10.</span></a></td>
+<td class="value">None</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-2');</script>
+</div>
+</div>
+<div id="4cf06e2c" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>y_pred_bl <span class="op">=</span> log_reg_bl.predict(X_test_sk)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cm_logistic_bl <span class="op">=</span> confusion_matrix(y_test, y_pred_bl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="48d8be07" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">4</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm_logistic_bl, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">'d'</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>, </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>],</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>            yticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>])</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix of Logistic Regression Model"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, pad<span class="op">=</span><span class="dv">10</span>) </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Predicted"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, labelpad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Actual"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, labelpad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="classification_files/figure-html/cell-24-output-1.png" width="460" height="375" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="7a77ab30" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>accuracy_bl <span class="op">=</span> accuracy_score(y_test, y_pred_bl)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sensitivity_bl <span class="op">=</span> recall_score(y_test, y_pred_bl)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>tn, fp, fn, tp <span class="op">=</span> cm_logistic_bl.ravel()</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>specificity_bl <span class="op">=</span> tn <span class="op">/</span> (tn <span class="op">+</span> fp) <span class="cf">if</span> (tn <span class="op">+</span> fp) <span class="op">!=</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>precision_bl <span class="op">=</span> precision_score(y_test, y_pred_bl)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>balanced_accuracy_bl <span class="op">=</span> (sensitivity <span class="op">+</span> specificity) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's accuracy rate is </span><span class="sc">{</span>accuracy_bl<span class="sc">:.2%}</span><span class="ss">."</span>)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's sensitivity rate is </span><span class="sc">{</span>sensitivity_bl<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's specificity rate is </span><span class="sc">{</span>specificity_bl<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's precision is </span><span class="sc">{</span>precision_bl<span class="sc">:.2%}</span><span class="ss">"</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The model's balanced accuracy is </span><span class="sc">{</span>balanced_accuracy_bl<span class="sc">:.2%}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The model's accuracy rate is 67.21%.
+The model's sensitivity rate is 75.11%
+The model's specificity rate is 64.19%
+The model's precision is 44.50%
+The model's balanced accuracy is 59.68%</code></pre>
+</div>
+</div>
+<div id="171a78b4" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>train_accuracy_bl <span class="op">=</span> log_reg_bl.score(X_train_sk, y_train)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>test_accuracy_bl <span class="op">=</span> log_reg_bl.score(X_test_sk, y_test)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training Accuracy: </span><span class="sc">{</span>train_accuracy_bl<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Accuracy: </span><span class="sc">{</span>test_accuracy_bl<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training Accuracy: 0.6728
+Test Accuracy: 0.6721</code></pre>
+</div>
+</div>
+<p><strong>These results highlight a substantial improvement in sensitivity, meaning the model is now much more effective at identifying customers who are likely to cancel.</strong> Although overall accuracy and specificity decreased slightly, this trade-off aligns with Lobster Land management’s objective of prioritizing the detection of potential cancellations.</p>
+<p><strong>Moreover, the similar accuracy rates on the training and test sets indicate that the model effectively captures the underlying patterns in the dataset without signs of overfitting.</strong> This balance suggests that the model generalizes well to unseen data while maintaining its predictive reliability. This balance between improved sensitivity and maintained generalizability enhances the model’s practical value in supporting proactive retention strategies.</p>
+</section>
+</section>
+<section id="model-interpretation-marketing-insights" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> <strong>Model Interpretation &amp; Marketing Insights</strong></h1>
+<div id="d7a9d273" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>coefficients_bl <span class="op">=</span> log_reg_bl.coef_.flatten()</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>coefficients_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: X_train_sk.columns,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Coefficient'</span>: coefficients_bl</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>coefficients_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Feature</th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>booking_lead_time</td>
+<td>-0.002551</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>paid_in_full</td>
+<td>-1.163288</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>customer_income</td>
+<td>-0.000009</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>cabin_type_Interior</td>
+<td>0.441299</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>cabin_type_Oceanview</td>
+<td>-0.055569</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>cabin_type_Suite</td>
+<td>-0.160435</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>loyalty_status_None</td>
+<td>1.525025</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>loyalty_status_Platinum</td>
+<td>-0.127726</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>loyalty_status_Silver</td>
+<td>0.231649</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="interpretation" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">7.1</span> <strong>Interpretation</strong></h2>
+<p>The coefficients of the input features provide the following insights about the final model’s results:</p>
+<ul>
+<li><p>For each additional day a customer <strong>books in advance</strong>, the likelihood of a cruise booking being canceled <strong>decreases</strong>, holding all other variables constant. <em>This suggests that passengers who plan their trips early are generally more committed and less likely to change their minds.</em></p></li>
+<li><p>Customers who have <strong>paid the full amount</strong> for the cruise are <strong>less likely</strong> to cancel their booking compared to those who made partial payments, holding all else constant. <em>This indicates that passengers who have made a financial commitment to the cruise are more likely to follow through with their bookings.</em></p></li>
+<li><p>Every <strong>additional dollar in customer income</strong> is associated with a <strong>relative decrease</strong> in the probability of cancellation, holding all other factors constant. <em>This might reflect that wealthier passengers are less price-sensitive and more likely to commit to their bookings.</em></p></li>
+<li><p>Compared to customers who booked a Balcony cabin, those booking an <strong>Interior cabin</strong> are <strong>more likely</strong> to cancel, while those booking an <strong>Oceanview cabin</strong> are <strong>less likely</strong> to cancel. <em>This could be due to different expectations and experiences associated with different cabin types.</em></p></li>
+<li><p>Compared to customers with Gold loyalty status, customers <strong>without</strong> any loyalty status and those with <strong>Silver</strong> loyalty status are <strong>more likely</strong> to cancel. However, customers with <strong>Platinum</strong> loyalty status are <strong>less likely</strong> to cancel, holding all other factors constant. <em>This suggests that loyalty programs play a significant role in retention.</em></p></li>
+</ul>
+<p>In general, <strong>passengers who book late, make partial payments, have lower loyalty status, book interior cabins, or have lower income levels appear most at risk of cancellation.</strong></p>
+</section>
+<section id="suggestions" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="suggestions"><span class="header-section-number">7.2</span> <strong>Suggestions</strong></h2>
+<p>Based on these insights, Lobster Land marketing teams can develop targeted strategies to increase customer commitment and reduce cancellations, such as:</p>
+<ul>
+<li><p><strong>Proactive Outreach:</strong> Marketing teams can reach out to passengers with partial payments, particularly those with lower incomes, as they are more likely to cancel. Personalized emails, offering reassurance, payment plans, or flexible cancellation policies, could encourage them to finalize their bookings. These communications could emphasize the benefits of early commitment and offer targeted discounts for early full payments.</p></li>
+<li><p><strong>Targeted Promotions:</strong> Given the impact of cabin type, Lobster Land could target passengers booking Interior cabins with additional perks such as room upgrades or discounts on shore excursions to reduce the likelihood of cancellations. For Oceanview and Balcony cabin customers, Lobster Land can continue promoting their offerings, emphasizing the unique experiences that these cabins provide.</p></li>
+<li><p><strong>Loyalty Program Strengthening:</strong> With loyalty status strongly influencing cancellation behavior, Lobster Land can focus on nurturing their existing loyal customers. Offering targeted incentives for Silver members to upgrade to Gold or Platinum status can help retain high-value passengers. Furthermore, for non-loyalty customers, marketing efforts could center around showcasing the benefits of the loyalty program and encouraging them to join early in their booking process.</p></li>
+<li><p><strong>Customer Segmentation:</strong> The insights on customer income and payment behavior suggest that Lobster Land may benefit from creating distinct marketing campaigns tailored to different income segments. For higher-income passengers, premium services or exclusive offers can be emphasized, while for lower-income passengers, flexible payment options and affordability could be prioritized to reduce cancellations.</p></li>
+</ul>
+</section>
+<section id="concentrating-marketing-efforts" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="concentrating-marketing-efforts"><span class="header-section-number">7.3</span> <strong>Concentrating Marketing Efforts</strong></h2>
+<p>While this standard classification model provides a binary prediction of whether a passenger will cancel, Lobster Land can unlock more business value by utilizing the model’s <strong>predictive probabilities</strong> <em>(predict_proba())</em>. Rather than treating all potential cancellations as a homogenous group, management can <strong>use these probability scores to implement highly nuanced, cost-effective retention strategies.</strong></p>
+<div id="da2a1067" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>probs_df <span class="op">=</span> pd.DataFrame(log_reg_bl.predict_proba(X_test_sk))</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>probs_df_sorted <span class="op">=</span> probs_df.sort_values(<span class="dv">1</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>probs_df_sorted.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">175</th>
+<td>0.073893</td>
+<td>0.926107</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">212</th>
+<td>0.079401</td>
+<td>0.920599</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">116</th>
+<td>0.094275</td>
+<td>0.905725</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">710</th>
+<td>0.095772</td>
+<td>0.904228</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">55</th>
+<td>0.110540</td>
+<td>0.889460</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">515</th>
+<td>0.119750</td>
+<td>0.880250</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">385</th>
+<td>0.128572</td>
+<td>0.871428</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">416</th>
+<td>0.132455</td>
+<td>0.867545</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">519</th>
+<td>0.135672</td>
+<td>0.864328</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">747</th>
+<td>0.136215</td>
+<td>0.863785</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For instance, Lobster Land could <strong>concentrate its targeted outreach by focusing on prospective cruisers whose predict_proba() values are exceptionally high</strong>, such as above 0.80. If the marketing team has a limited budget for expensive interventions, reserving these resources strictly for passengers who are on the verge of canceling ensures a higher return on investment.</p>
+<div id="e41ec6b5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>probs_df_middle <span class="op">=</span> probs_df[(probs_df[<span class="dv">1</span>] <span class="op">&gt;</span> <span class="fl">0.3</span>) <span class="op">&amp;</span> (probs_df[<span class="dv">1</span>] <span class="op">&lt;</span> <span class="fl">0.7</span>)].sort_values(<span class="dv">1</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>probs_df_middle.sample(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">739</th>
+<td>0.310423</td>
+<td>0.689577</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">393</th>
+<td>0.587874</td>
+<td>0.412126</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">762</th>
+<td>0.565432</td>
+<td>0.434568</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">160</th>
+<td>0.688048</td>
+<td>0.311952</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">672</th>
+<td>0.378559</td>
+<td>0.621441</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">157</th>
+<td>0.611768</td>
+<td>0.388232</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">114</th>
+<td>0.503053</td>
+<td>0.496947</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">451</th>
+<td>0.510296</td>
+<td>0.489704</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">658</th>
+<td>0.380604</td>
+<td>0.619396</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">231</th>
+<td>0.399794</td>
+<td>0.600206</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Alternatively, <strong>management could adopt a “triage” approach to marketing.</strong> They might determine that customers with a cancellation probability exceeding 70% are essentially “lost causes” who have likely already finalized their decision to back out. Conversely, passengers with a cancellation probability below 30% can be considered relatively “safe.” By filtering out these two groups, Lobster Land can <strong>focus its marketing resources on the middle cohort (the 30% to 70% range)</strong>. This group represents the “fence-sitters”, who are hesitant to commit, but can be retained with appropriate strategic measures, such as sending a reassuring email about the ship’s safety regulations or offering a limited-time upgrade offer.</p>
+<p>In this way, business can move beyond simply asking, “Will they cancel?” to strategically answering, “Who is worth our marketing effort to save, and what is the most efficient way to allocate that budget?”</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

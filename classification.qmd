@@ -1,0 +1,349 @@
+---
+title: 🔍 Cruise Booking Cancellation Analysis
+subtitle: A Logistic Regression Approach to Predicting Cancellations for Lobster Land Cruises
+author:
+  - name: Furong Wang
+    affiliations:
+      - id: bu
+        name: Boston University
+        city: Boston
+        state: MA
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-expand: 2
+    number-sections: true
+    df-print: paged
+jupyter: python3
+---
+
+
+```{python}
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import re
+from sklearn.model_selection import train_test_split
+import statsmodels.api as sm
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+```
+
+# **Project Background**
+For Lobster Land Cruises, passenger cancellations are a costly and unpredictable issue. The company needed a reliable way to anticipate these cancellations before they happen. In this project, I developed a machine learning classification model to predict which customers are most likely to cancel their bookings. By analyzing historical passenger data and identifying high-risk profiles, this analysis aims to empower the marketing team with actionable, data-driven insights to proactively retain customers and optimize marketing resources.
+
+# **Data Preparation & Exploration**
+
+First of all, I explored the dataset and prepared it for modeling. **I addressed missing values in the `loyalty_status` variable by imputing them with "None,"** as these entries represent customers without loyalty status. Next, based on the statistical summary of the dataset, **I identified and handled impossible values in the `customer_income` variable**. Given that the number of problematic rows was small, I decided to remove them to avoid introducing bias through imputation or substitution, thereby preserving the overall integrity of the dataset.
+
+Additionally, by checking the values in the `canceled` variable, I found **a certain degree of class imbalance among the records**: about 72% of bookings were not canceled and 28% were canceled. This imbalance could negatively affect the model’s sensitivity to detecting cancellations and may impact precision and recall scores. **I tried to address this issue by adjusting the class weights in subsequent modeling steps.**
+
+```{python}
+cruise_cancellations = pd.read_csv("Datasets/cruise_cancellations.csv")
+cruise_cancellations.head()
+```
+
+```{python}
+cruise_cancellations.info()
+```
+
+```{python}
+cruise_cancellations['canceled'].value_counts()
+```
+
+```{python}
+cruise_cancellations['loyalty_status'] = cruise_cancellations['loyalty_status'].fillna('None')
+```
+
+```{python}
+cruise_cancellations.describe()
+```
+
+```{python}
+neg_income = cruise_cancellations.loc[cruise_cancellations['customer_income'] < 0, 'customer_income'].count()
+print(f"Records with negative spending: {neg_income}")
+```
+
+```{python}
+cruise_cancellations = cruise_cancellations[(cruise_cancellations['customer_income'] >= 0)]
+```
+
+# **Examining Correlations**
+
+As shown in the correlation matrix below, **there are no strong correlations among the numeric independent variables**. The highest absolute correlation is about 0.08, which is very low. There is no concern about multicollinearity, so I chose to keep all numeric variables for the logistic regression model.
+
+```{python}
+numeric_vars = cruise_cancellations[[
+    'age', 
+    'booking_lead_time',
+    'group_size', 
+    'prior_cruises', 
+    'customer_income', 
+    'email_engagement_score', 
+    'website_visits_last_month',
+    'travel_history_score'
+]]
+
+correlation_matrix = numeric_vars.corr()
+correlation_matrix
+```
+
+# **Dummifying**
+
+In this step, I dummified the categorical variables that were not already binary-coded (1s and 0s). I set drop_first=True to avoid creating linear dependencies among the input features, ensuring that the model does not suffer from multicollinearity.
+
+```{python}
+categorical_cols = ['cabin_type', 'trip_length', 'loyalty_status', 'survey_participation', 
+                    'preferred_contact_method', 'referral_source']
+cruise_dummified = pd.get_dummies(cruise_cancellations, columns=categorical_cols, drop_first=True).astype(float)
+cruise_dummified.head()
+```
+
+# **Data Partition**
+
+```{python}
+X_logistic = cruise_dummified.drop('canceled', axis=1)
+y_logistic = cruise_dummified['canceled']
+
+X_train, X_test, y_train, y_test = train_test_split(X_logistic, y_logistic, test_size=0.40, 
+                                                    random_state=654, stratify=y_logistic)
+```
+
+# **Modeling**
+
+## **Initial Selection of Dependent Variables**
+
+In this step, I compared the mean values of the variables after grouping the data by the `canceled` outcome. Based on the observed differences, I made an early speculation that variables such as `booking_lead_time`, `paid_in_full`, `customer_income`, `cabin_type`, and `loyalty_status` may be particularly impactful predictors in our model.
+
+```{python}
+group_means = cruise_dummified.groupby('canceled').mean().T
+group_means
+```
+
+## **First iteration of the model (statsmodels)**
+
+**I built the first iteration of the logistic regression model using the training data, initially including all available independent variables.** Based on the model summary, the overall classification power was statistically significant, as indicated by a likelihood ratio (LLR) p-value much lower than 0.05. Some features have p-values much higher than 0.05, suggesting they are not strong predictors of booking cancellations. 
+
+```{python}
+X_train_sm1 = sm.add_constant(X_train)
+
+logit_model = sm.Logit(y_train, X_train_sm1)
+result_sm1 = logit_model.fit()
+print(result_sm1.summary())
+```
+
+Consequently, I would **remove the numerical variables with high p-values** (`age`, `prior_cruises`, `email_engagement_score`, `website_visits_last_month` and `travel_history_score`), as well as **categorical variables where all levels showed high p-values** (`group_size`, `phone_verified`, `has_insurance`, `on_mailing_list`, `gift_certificate_used`, `trip_length`, `survey_participation`, `preferred_contact_method` and `referral_source`).
+
+## **Another Model Iteration (statsmodels)**
+
+**Then, I performed another model iteration.** In this iteration, I used only the independent variables that remained after the first model refinement. As shown in the updated model summary, **the LLR p-value has declined from 1.715e-25 to 9.926e-34**. This indicates that by limiting our inputs to only the features that significantly impact booking cancellations, I have developed a better-fitting and more compact model.
+
+The summary below tells us that:
+
+- For each additional day that a customer books in advance (`booking_lead_time`), the log odds of a cruise booking being canceled decrease by 0.0025, holding all other variables constant.
+
+- Having paid the full amount for the cruise (`paid_in_full`) decreases the log odds of cancellation by 1.1325 compared to customers who have not paid in full, holding all other variables constant.
+
+- For every additional dollar in customer income (customer_income), the log odds of cancellation decrease by 8.916e-06, holding all other variables constant.
+
+- Compared to customers who booked a `Balcony cabin`, customers booking an `Interior cabin` (`cabin_type_Interior`) experience an increase of 0.4338 in the log odds of cancellation, holding all other variables constant.
+
+- Compared to customers with `Gold` loyalty status, customers `without any loyalty status` (`loyalty_status_None`) experience an increase of 1.5381 in the log odds of cancellation, holding all other variables constant.
+
+```{python}
+X_train_sm2 = X_train[['booking_lead_time', 'paid_in_full', 'customer_income', 
+                      'cabin_type_Interior', 'cabin_type_Oceanview', 'cabin_type_Suite', 
+                      'loyalty_status_None', 'loyalty_status_Platinum', 'loyalty_status_Silver']]
+X_train_sm2 = sm.add_constant(X_train_sm2)
+
+logit_model_sm2 = sm.Logit(y_train, X_train_sm2)
+result_sm2 = logit_model_sm2.fit()
+print(result_sm2.summary())
+```
+
+## **Model Evaluation**
+
+Next, I built another version of our model using scikit-learn to evaluate its performance.
+
+```{python}
+X_train_sk = X_train[['booking_lead_time', 'paid_in_full', 'customer_income', 
+                      'cabin_type_Interior', 'cabin_type_Oceanview', 'cabin_type_Suite', 
+                      'loyalty_status_None', 'loyalty_status_Platinum', 'loyalty_status_Silver']]
+
+X_test_sk = X_test[['booking_lead_time', 'paid_in_full', 'customer_income', 
+                      'cabin_type_Interior', 'cabin_type_Oceanview', 'cabin_type_Suite', 
+                      'loyalty_status_None', 'loyalty_status_Platinum', 'loyalty_status_Silver']]
+```
+
+```{python}
+log_reg = LogisticRegression(max_iter=10000)
+log_reg.fit(X_train_sk, y_train)
+```
+
+```{python}
+y_pred_logistic = log_reg.predict(X_test_sk)
+cm_logistic = confusion_matrix(y_test, y_pred_logistic)
+```
+
+```{python}
+plt.figure(figsize=(5, 4))
+sns.heatmap(cm_logistic, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=['Not Canceled (0)', 'Canceled (1)'],
+            yticklabels=['Not Canceled (0)', 'Canceled (1)'])
+plt.title("Confusion Matrix of Logistic Regression Model", fontsize=12, pad=10) 
+plt.xlabel("Predicted", fontsize=12, labelpad=10)
+plt.ylabel("Actual", fontsize=12, labelpad=10)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+accuracy = accuracy_score(y_test, y_pred_logistic)
+sensitivity = recall_score(y_test, y_pred_logistic)
+
+tn, fp, fn, tp = cm_logistic.ravel()
+specificity = tn / (tn + fp) if (tn + fp) != 0 else 0
+
+precision = precision_score(y_test, y_pred_logistic)
+balanced_accuracy = (sensitivity + specificity) / 2
+
+print(f"The model's accuracy rate is {accuracy:.2%}.")
+print(f"The model's sensitivity rate is {sensitivity:.2%}")
+print(f"The model's specificity rate is {specificity:.2%}")
+print(f"The model's precision is {precision:.2%}")
+print(f"The model's balanced accuracy is {balanced_accuracy:.2%}")
+```
+
+```{python}
+train_accuracy = log_reg.score(X_train_sk, y_train)
+test_accuracy = log_reg.score(X_test_sk, y_test)
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+```
+
+These results imply that while the model is conservative and favors predicting non-cancellations (leading to high specificity), **it misses a substantial portion of actual cancellations** (low sensitivity). In business terms, **this could mean Lobster Land risks underestimating the number of cancellations, which might impact operational planning and revenue forecasting.**
+
+Furthermore, I compared the accuracy on the training and test sets. The training set accuracy is 73.12%, while the test set accuracy is 74.22%. Since the two accuracy rates are very close, it suggests that this model has not been overfitted to the training data.
+
+## **Address the Imbalance Issue**
+
+To address the class imbalance issue, I applied the `class_weight` parameter in the logistic regression model. This parameter allows us to assign different weights to the classes, which can help improve the model's sensitivity to the minority class (cancellations). By setting `class_weight='balanced'`, I let scikit-learn automatically adjust the weights inversely proportional to class frequencies in the input data.
+
+```{python}
+log_reg_bl = LogisticRegression(max_iter=1000, class_weight='balanced')
+log_reg_bl.fit(X_train_sk, y_train)
+```
+
+```{python}
+y_pred_bl = log_reg_bl.predict(X_test_sk)
+cm_logistic_bl = confusion_matrix(y_test, y_pred_bl)
+```
+
+```{python}
+plt.figure(figsize=(5, 4))
+sns.heatmap(cm_logistic_bl, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=['Not Canceled (0)', 'Canceled (1)'],
+            yticklabels=['Not Canceled (0)', 'Canceled (1)'])
+plt.title("Confusion Matrix of Logistic Regression Model", fontsize=12, pad=10) 
+plt.xlabel("Predicted", fontsize=12, labelpad=10)
+plt.ylabel("Actual", fontsize=12, labelpad=10)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+accuracy_bl = accuracy_score(y_test, y_pred_bl)
+sensitivity_bl = recall_score(y_test, y_pred_bl)
+
+tn, fp, fn, tp = cm_logistic_bl.ravel()
+specificity_bl = tn / (tn + fp) if (tn + fp) != 0 else 0
+
+precision_bl = precision_score(y_test, y_pred_bl)
+balanced_accuracy_bl = (sensitivity + specificity) / 2
+
+print(f"The model's accuracy rate is {accuracy_bl:.2%}.")
+print(f"The model's sensitivity rate is {sensitivity_bl:.2%}")
+print(f"The model's specificity rate is {specificity_bl:.2%}")
+print(f"The model's precision is {precision_bl:.2%}")
+print(f"The model's balanced accuracy is {balanced_accuracy_bl:.2%}")
+```
+
+```{python}
+train_accuracy_bl = log_reg_bl.score(X_train_sk, y_train)
+test_accuracy_bl = log_reg_bl.score(X_test_sk, y_test)
+
+print(f"Training Accuracy: {train_accuracy_bl:.4f}")
+print(f"Test Accuracy: {test_accuracy_bl:.4f}")
+```
+
+**These results highlight a substantial improvement in sensitivity, meaning the model is now much more effective at identifying customers who are likely to cancel.** Although overall accuracy and specificity decreased slightly, this trade-off aligns with Lobster Land management’s objective of prioritizing the detection of potential cancellations. 
+
+**Moreover, the similar accuracy rates on the training and test sets indicate that the model effectively captures the underlying patterns in the dataset without signs of overfitting.** This balance suggests that the model generalizes well to unseen data while maintaining its predictive reliability. 
+This balance between improved sensitivity and maintained generalizability enhances the model’s practical value in supporting proactive retention strategies.
+
+# **Model Interpretation & Marketing Insights**
+
+```{python}
+coefficients_bl = log_reg_bl.coef_.flatten()
+
+coefficients_df = pd.DataFrame({
+    'Feature': X_train_sk.columns,
+    'Coefficient': coefficients_bl
+})
+coefficients_df
+```
+
+## **Interpretation**
+
+The coefficients of the input features provide the following insights about the final model's results:
+
+- For each additional day a customer **books in advance**, the likelihood of a cruise booking being canceled **decreases**, holding all other variables constant. *This suggests that passengers who plan their trips early are generally more committed and less likely to change their minds.*
+
+- Customers who have **paid the full amount** for the cruise are **less likely** to cancel their booking compared to those who made partial payments, holding all else constant. *This indicates that passengers who have made a financial commitment to the cruise are more likely to follow through with their bookings.*
+
+- Every **additional dollar in customer income** is associated with a **relative decrease** in the probability of cancellation, holding all other factors constant. *This might reflect that wealthier passengers are less price-sensitive and more likely to commit to their bookings.*
+
+- Compared to customers who booked a Balcony cabin, those booking an **Interior cabin** are **more likely** to cancel, while those booking an **Oceanview cabin** are **less likely** to cancel. *This could be due to different expectations and experiences associated with different cabin types.*
+
+- Compared to customers with Gold loyalty status, customers **without** any loyalty status and those with **Silver** loyalty status are **more likely** to cancel. However, customers with **Platinum** loyalty status are **less likely** to cancel, holding all other factors constant. *This suggests that loyalty programs play a significant role in retention.*
+
+In general, **passengers who book late, make partial payments, have lower loyalty status, book interior cabins, or have lower income levels appear most at risk of cancellation.**
+
+## **Suggestions**
+
+Based on these insights, Lobster Land marketing teams can develop targeted strategies to increase customer commitment and reduce cancellations, such as:
+
+- **Proactive Outreach:** Marketing teams can reach out to passengers with partial payments, particularly those with lower incomes, as they are more likely to cancel. Personalized emails, offering reassurance, payment plans, or flexible cancellation policies, could encourage them to finalize their bookings. These communications could emphasize the benefits of early commitment and offer targeted discounts for early full payments.
+
+- **Targeted Promotions:** Given the impact of cabin type, Lobster Land could target passengers booking Interior cabins with additional perks such as room upgrades or discounts on shore excursions to reduce the likelihood of cancellations. For Oceanview and Balcony cabin customers, Lobster Land can continue promoting their offerings, emphasizing the unique experiences that these cabins provide.
+
+- **Loyalty Program Strengthening:** With loyalty status strongly influencing cancellation behavior, Lobster Land can focus on nurturing their existing loyal customers. Offering targeted incentives for Silver members to upgrade to Gold or Platinum status can help retain high-value passengers. Furthermore, for non-loyalty customers, marketing efforts could center around showcasing the benefits of the loyalty program and encouraging them to join early in their booking process.
+
+- **Customer Segmentation:** The insights on customer income and payment behavior suggest that Lobster Land may benefit from creating distinct marketing campaigns tailored to different income segments. For higher-income passengers, premium services or exclusive offers can be emphasized, while for lower-income passengers, flexible payment options and affordability could be prioritized to reduce cancellations.
+
+## **Concentrating Marketing Efforts**
+
+While this standard classification model provides a binary prediction of whether a passenger will cancel, Lobster Land can unlock more business value by utilizing the model's **predictive probabilities** *(predict_proba())*. Rather than treating all potential cancellations as a homogenous group, management can **use these probability scores to implement highly nuanced, cost-effective retention strategies.**
+
+```{python}
+#| vscode: {languageId: javascript}
+probs_df = pd.DataFrame(log_reg_bl.predict_proba(X_test_sk))
+probs_df_sorted = probs_df.sort_values(1, ascending = False)
+probs_df_sorted.head(10)
+```
+
+For instance, Lobster Land could **concentrate its targeted outreach by focusing on prospective cruisers whose predict_proba() values are exceptionally high**, such as above 0.80. If the marketing team has a limited budget for expensive interventions, reserving these resources strictly for passengers who are on the verge of canceling ensures a higher return on investment.
+
+```{python}
+#| vscode: {languageId: javascript}
+probs_df_middle = probs_df[(probs_df[1] > 0.3) & (probs_df[1] < 0.7)].sort_values(1, ascending = False)
+probs_df_middle.sample(10)
+```
+
+Alternatively, **management could adopt a "triage" approach to marketing.** They might determine that customers with a cancellation probability exceeding 70% are essentially "lost causes" who have likely already finalized their decision to back out. Conversely, passengers with a cancellation probability below 30% can be considered relatively "safe." By filtering out these two groups, Lobster Land can **focus its marketing resources on the middle cohort (the 30% to 70% range)**. This group represents the "fence-sitters", who are hesitant to commit, but can be retained with appropriate strategic measures, such as sending a reassuring email about the ship’s safety regulations or offering a limited-time upgrade offer.
+
+In this way, business can move beyond simply asking, "Will they cancel?" to strategically answering, "Who is worth our marketing effort to save, and what is the most efficient way to allocate that budget?"
+

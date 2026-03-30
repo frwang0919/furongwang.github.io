@@ -7,15 +7,24 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - text: Marketing Analytics
+        menu:
+          - text: Lobsterland Consumer Insights 
+            href: marketing_analytics.qmd                    
+          - text: Cruise Booking Cancellation Analysis       
+            href: classification.qmd
 
 format:
   html:
-    theme:
-      - cosmo
-      - brand
-    css: styles.css
+    theme: cosmo
     toc: true
+    toc-depth: 2
+    toc-expand: 2
+
+execute:
+  echo: true
+  eval: true
+  code-fold: true
 
 
 
