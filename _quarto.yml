@@ -15,6 +15,10 @@ website:
             href: classification.qmd
       - href: index.qmd#web-analytics
         text: Web Analytics
+      - href: index.qmd#database-design
+        text: Database Design
+      - href: index.qmd#other-projects
+        text: Other Projects
 
 
 format:

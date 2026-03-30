@@ -144,13 +144,13 @@
     "href": "index.html#web-analytics",
     "title": "Selected Business Analytics Projects",
     "section": "Web Analytics",
-    "text": "Web Analytics\n\n💼 Job Postings Analytics Using Spark\nThe global job market is undergoing a profound transformation, driven by factors such as the rapid adoption of artificial intelligence (AI), evolving work models like remote work, and shifting wage structures across industries. In this project, me and my teammate analyzed global job market trends using PySpark, focusing on salary patterns across careers. The study explored the impact of remote work, regional differences, and industry-specific dynamics on compensation, providing actionable insights to support informed career planning and workforce strategy development.\n\nLanguage: Python\nTools: Pandas, PySpark, Plotly"
+    "text": "Web Analytics\n\n💼 Job Postings Analytics Using Spark\nThe global job market is undergoing a profound transformation, driven by factors such as the rapid adoption of artificial intelligence (AI), evolving work models like remote work, and shifting wage structures across industries. In this project, me and my teammate analyzed global job market trends using PySpark, focusing on salary patterns across careers. The study explored the impact of remote work, regional differences, and industry-specific dynamics on compensation, providing actionable insights to support informed career planning and workforce strategy development.\n\nLanguage: Python\nTools: Pandas, PySpark, Plotly\n\n\n\n\n\n\n\n\nView Report"
   },
   {
     "objectID": "index.html#database-design",
     "href": "index.html#database-design",
     "title": "Selected Business Analytics Projects",
     "section": "Database design",
-    "text": "Database design"
+    "text": "Database design\n\n💾 MoveMate: Integrated Relational Database for Relocation\nCurrent relocation solutions are scattered across social media and informal channels, making informed decision-making difficult. In this project, I designed a relational database for “MoveMate,” a one-stop platform that integrates rental housing management, moving services, and secondhand trading. I performed comprehensive requirement analysis to define entities including housing listings, service providers, and transaction histories. By establishing primary-foreign key relationships and data integrity constraints, I enabled cross-functional features such as personalized furniture recommendations. The resulting design provides a scalable foundation for managing distinct user roles and complex service interdependencies.\n\nLanguage: SQL\nTools: Oracle, Lucidchart (ER Modeling)"
   }
 ]

@@ -68,12 +68,21 @@ The global job market is undergoing a profound transformation, driven by factors
 :::
 
 :::
+[View Report](https://canva.link/6ejyh68s1c5h5uu){.btn .btn-primary}
 
-## Database design
+## Database design{#database-design}
+### 💾 MoveMate: Integrated Relational Database for Relocation
+Current relocation solutions are scattered across social media and informal channels, making informed decision-making difficult. In this project, I designed a relational database for "MoveMate," a one-stop platform that integrates rental housing management, moving services, and secondhand trading. I performed comprehensive requirement analysis to define entities including housing listings, service providers, and transaction histories. By establishing primary-foreign key relationships and data integrity constraints, I enabled cross-functional features such as personalized furniture recommendations. The resulting design provides a scalable foundation for managing distinct user roles and complex service interdependencies.
 
+- Language: SQL
+- Tools: Oracle, Lucidchart (ER Modeling)
 
+![](images/full_physical_ERD.png){width=100% fig-align="center"}
 
+# Other Projects{#other-projects}
+- **[Data Visualization with Tableau](https://public.tableau.com/app/profile/furong.wang/viz/Dashboard_17439969338420/Dashboard1)**: Visitor trends and event impacts in Lobsterland Park.
 
+- **[Business Analytics for Real Estate](https://canva.link/xth7j4rq1elcc5d)**: Delivered data-driven insights for the Eltingville real estate market by visualizing historical trends in **Power BI**. Leveraged **multiple regression** and **Excel Solver** to identify growth opportunities, predictive pricing, and optimized marketing strategies for enhanced business performance.
 
 # Let's Connect
 📧 **Email:** [frwang@bu.edu](mailto:frwang@bu.edu) <br>
