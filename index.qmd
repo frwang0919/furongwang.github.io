@@ -29,7 +29,7 @@ In this project, I analyzed customer behavior and sales trends to uncover season
 :::
 
 :::
-[Read More](marketing_analytics.qmd){.btn .btn-primary}
+[Read More](marketing_analytics.qmd){.btn .btn-outline-primary .btn-sm}
 
 ### 🔍 Cruise Booking Cancellation Analysis
 In this project, I developed a classification model to identify passengers at risk of canceling their cruise bookings. Using customer demographic and behavioral data, I explored patterns in booking behavior and applied machine learning techniques to predict cancellation likelihood. Meanwhile, I evaluated model performance using appropriate metrics and interpreted key drivers of cancellation risk, uncovering actionable patterns among high-risk passenger segments. These insights enable targeted marketing strategies.
@@ -48,7 +48,7 @@ In this project, I developed a classification model to identify passengers at ri
 :::
 
 :::
-[Read More](classification.qmd){.btn .btn-primary}
+[Read More](classification.qmd){.btn .btn-outline-primary .btn-sm}
 
 ## Web Analytics {#web-analytics}
 ### 💼 Job Postings Analytics Using Spark
@@ -68,7 +68,7 @@ The global job market is undergoing a profound transformation, driven by factors
 :::
 
 :::
-[View Report](https://canva.link/6ejyh68s1c5h5uu){.btn .btn-primary}
+[View Report](https://canva.link/6ejyh68s1c5h5uu){.btn .btn-outline-primary .btn-sm}
 
 ## Database design{#database-design}
 ### 💾 MoveMate: Integrated Relational Database for Relocation
