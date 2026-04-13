@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -75,10 +75,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -235,7 +235,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="c63b845d" class="cell" data-execution_count="1">
+<div id="16647f79" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -254,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1 data-number="2"><span class="header-section-number">2</span> <strong>Data Preparation &amp; Exploration</strong></h1>
 <p>First of all, I explored the dataset and prepared it for modeling. <strong>I addressed missing values in the <code>loyalty_status</code> variable by imputing them with “None,”</strong> as these entries represent customers without loyalty status. Next, based on the statistical summary of the dataset, <strong>I identified and handled impossible values in the <code>customer_income</code> variable</strong>. Given that the number of problematic rows was small, I decided to remove them to avoid introducing bias through imputation or substitution, thereby preserving the overall integrity of the dataset.</p>
 <p>Additionally, by checking the values in the <code>canceled</code> variable, I found <strong>a certain degree of class imbalance among the records</strong>: about 72% of bookings were not canceled and 28% were canceled. This imbalance could negatively affect the model’s sensitivity to detecting cancellations and may impact precision and recall scores. <strong>I tried to address this issue by adjusting the class weights in subsequent modeling steps.</strong></p>
-<div id="f6ff1622" class="cell" data-execution_count="2">
+<div id="2fa3022d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations <span class="op">=</span> pd.read_csv(<span class="st">"Datasets/cruise_cancellations.csv"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
@@ -409,7 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="12af1c16" class="cell" data-execution_count="3">
+<div id="6c1c10d2" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
@@ -441,7 +441,7 @@ dtypes: float64(3), int64(12), object(5)
 memory usage: 312.6+ KB</code></pre>
 </div>
 </div>
-<div id="aebd9aab" class="cell" data-execution_count="4">
+<div id="439f43ac" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations[<span class="st">'canceled'</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>canceled
@@ -450,10 +450,10 @@ memory usage: 312.6+ KB</code></pre>
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="61f76006" class="cell" data-execution_count="5">
+<div id="86db6dd6" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations[<span class="st">'loyalty_status'</span>] <span class="op">=</span> cruise_cancellations[<span class="st">'loyalty_status'</span>].fillna(<span class="st">'None'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="e7a79165" class="cell" data-execution_count="6">
+<div id="89cb7d17" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
@@ -631,21 +631,21 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="9bf43ae0" class="cell" data-execution_count="7">
+<div id="5a63f924" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>neg_income <span class="op">=</span> cruise_cancellations.loc[cruise_cancellations[<span class="st">'customer_income'</span>] <span class="op">&lt;</span> <span class="dv">0</span>, <span class="st">'customer_income'</span>].count()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Records with negative spending: </span><span class="sc">{</span>neg_income<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Records with negative spending: 3</code></pre>
 </div>
 </div>
-<div id="d9a47eb6" class="cell" data-execution_count="8">
+<div id="25288f62" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cruise_cancellations <span class="op">=</span> cruise_cancellations[(cruise_cancellations[<span class="st">'customer_income'</span>] <span class="op">&gt;=</span> <span class="dv">0</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="examining-correlations" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> <strong>Examining Correlations</strong></h1>
 <p>As shown in the correlation matrix below, <strong>there are no strong correlations among the numeric independent variables</strong>. The highest absolute correlation is about 0.08, which is very low. There is no concern about multicollinearity, so I chose to keep all numeric variables for the logistic regression model.</p>
-<div id="541c60f8" class="cell" data-execution_count="9">
+<div id="68abd895" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>numeric_vars <span class="op">=</span> cruise_cancellations[[</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'age'</span>, </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'booking_lead_time'</span>,</span>
@@ -776,7 +776,7 @@ Name: count, dtype: int64</code></pre>
 <section id="dummifying" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> <strong>Dummifying</strong></h1>
 <p>In this step, I dummified the categorical variables that were not already binary-coded (1s and 0s). I set drop_first=True to avoid creating linear dependencies among the input features, ensuring that the model does not suffer from multicollinearity.</p>
-<div id="9e2ed4a6" class="cell" data-execution_count="10">
+<div id="0cd3b6ff" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>categorical_cols <span class="op">=</span> [<span class="st">'cabin_type'</span>, <span class="st">'trip_length'</span>, <span class="st">'loyalty_status'</span>, <span class="st">'survey_participation'</span>, </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'preferred_contact_method'</span>, <span class="st">'referral_source'</span>]</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>cruise_dummified <span class="op">=</span> pd.get_dummies(cruise_cancellations, columns<span class="op">=</span>categorical_cols, drop_first<span class="op">=</span><span class="va">True</span>).astype(<span class="bu">float</span>)</span>
@@ -943,7 +943,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="data-partition" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> <strong>Data Partition</strong></h1>
-<div id="000811fb" class="cell" data-execution_count="11">
+<div id="72d5c085" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>X_logistic <span class="op">=</span> cruise_dummified.drop(<span class="st">'canceled'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>y_logistic <span class="op">=</span> cruise_dummified[<span class="st">'canceled'</span>]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -956,7 +956,7 @@ Name: count, dtype: int64</code></pre>
 <section id="initial-selection-of-dependent-variables" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="initial-selection-of-dependent-variables"><span class="header-section-number">6.1</span> <strong>Initial Selection of Dependent Variables</strong></h2>
 <p>In this step, I compared the mean values of the variables after grouping the data by the <code>canceled</code> outcome. Based on the observed differences, I made an early speculation that variables such as <code>booking_lead_time</code>, <code>paid_in_full</code>, <code>customer_income</code>, <code>cabin_type</code>, and <code>loyalty_status</code> may be particularly impactful predictors in our model.</p>
-<div id="aca0cd39" class="cell" data-execution_count="12">
+<div id="d0f7d6a0" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>group_means <span class="op">=</span> cruise_dummified.groupby(<span class="st">'canceled'</span>).mean().T</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>group_means</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
@@ -1132,7 +1132,7 @@ Name: count, dtype: int64</code></pre>
 <section id="first-iteration-of-the-model-statsmodels" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="first-iteration-of-the-model-statsmodels"><span class="header-section-number">6.2</span> <strong>First iteration of the model (statsmodels)</strong></h2>
 <p><strong>I built the first iteration of the logistic regression model using the training data, initially including all available independent variables.</strong> Based on the model summary, the overall classification power was statistically significant, as indicated by a likelihood ratio (LLR) p-value much lower than 0.05. Some features have p-values much higher than 0.05, suggesting they are not strong predictors of booking cancellations.</p>
-<div id="bd011ff2" class="cell" data-execution_count="13">
+<div id="a2a4ebd8" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>X_train_sm1 <span class="op">=</span> sm.add_constant(X_train)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> sm.Logit(y_train, X_train_sm1)</span>
@@ -1147,8 +1147,8 @@ Name: count, dtype: int64</code></pre>
 Dep. Variable:               canceled   No. Observations:                 1198
 Model:                          Logit   Df Residuals:                     1167
 Method:                           MLE   Df Model:                           30
-Date:                Tue, 31 Mar 2026   Pseudo R-squ.:                  0.1358
-Time:                        02:35:35   Log-Likelihood:                -610.25
+Date:                Mon, 13 Apr 2026   Pseudo R-squ.:                  0.1358
+Time:                        22:15:57   Log-Likelihood:                -610.25
 converged:                       True   LL-Null:                       -706.12
 Covariance Type:            nonrobust   LLR p-value:                 1.715e-25
 ==================================================================================================
@@ -1201,7 +1201,7 @@ referral_source_Social Media      -0.1102      0.197     -0.560      0.576      
 <li><p>Compared to customers who booked a <code>Balcony cabin</code>, customers booking an <code>Interior cabin</code> (<code>cabin_type_Interior</code>) experience an increase of 0.4338 in the log odds of cancellation, holding all other variables constant.</p></li>
 <li><p>Compared to customers with <code>Gold</code> loyalty status, customers <code>without any loyalty status</code> (<code>loyalty_status_None</code>) experience an increase of 1.5381 in the log odds of cancellation, holding all other variables constant.</p></li>
 </ul>
-<div id="f4e4749c" class="cell" data-execution_count="14">
+<div id="2bb816d5" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>X_train_sm2 <span class="op">=</span> X_train[[<span class="st">'booking_lead_time'</span>, <span class="st">'paid_in_full'</span>, <span class="st">'customer_income'</span>, </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span>
@@ -1219,8 +1219,8 @@ referral_source_Social Media      -0.1102      0.197     -0.560      0.576      
 Dep. Variable:               canceled   No. Observations:                 1198
 Model:                          Logit   Df Residuals:                     1188
 Method:                           MLE   Df Model:                            9
-Date:                Tue, 31 Mar 2026   Pseudo R-squ.:                  0.1265
-Time:                        02:35:36   Log-Likelihood:                -616.82
+Date:                Mon, 13 Apr 2026   Pseudo R-squ.:                  0.1265
+Time:                        22:15:57   Log-Likelihood:                -616.82
 converged:                       True   LL-Null:                       -706.12
 Covariance Type:            nonrobust   LLR p-value:                 9.926e-34
 ===========================================================================================
@@ -1243,7 +1243,7 @@ loyalty_status_Silver       0.2951      0.267      1.104      0.270      -0.229 
 <section id="model-evaluation" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="model-evaluation"><span class="header-section-number">6.4</span> <strong>Model Evaluation</strong></h2>
 <p>Next, I built another version of our model using scikit-learn to evaluate its performance.</p>
-<div id="383cf25f" class="cell" data-execution_count="15">
+<div id="d25c3ec8" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>X_train_sk <span class="op">=</span> X_train[[<span class="st">'booking_lead_time'</span>, <span class="st">'paid_in_full'</span>, <span class="st">'customer_income'</span>, </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span>
@@ -1252,7 +1252,7 @@ loyalty_status_Silver       0.2951      0.267      1.104      0.270      -0.229 
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'cabin_type_Interior'</span>, <span class="st">'cabin_type_Oceanview'</span>, <span class="st">'cabin_type_Suite'</span>, </span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">'loyalty_status_None'</span>, <span class="st">'loyalty_status_Platinum'</span>, <span class="st">'loyalty_status_Silver'</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="91b783f9" class="cell" data-execution_count="16">
+<div id="6ce21cf0" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>log_reg <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">10000</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>log_reg.fit(X_train_sk, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
@@ -1865,11 +1865,11 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </script>
 </div>
 </div>
-<div id="7267e169" class="cell" data-execution_count="17">
+<div id="641e25d7" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>y_pred_logistic <span class="op">=</span> log_reg.predict(X_test_sk)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>cm_logistic <span class="op">=</span> confusion_matrix(y_test, y_pred_logistic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="95eb04b2" class="cell" data-execution_count="18">
+<div id="cec3304e" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">4</span>))</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm_logistic, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">'d'</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>, </span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>],</span>
@@ -1887,7 +1887,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 </div>
 </div>
-<div id="7168f70d" class="cell" data-execution_count="19">
+<div id="6a4ea509" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> accuracy_score(y_test, y_pred_logistic)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="op">=</span> recall_score(y_test, y_pred_logistic)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1910,7 +1910,7 @@ The model's precision is 56.86%
 The model's balanced accuracy is 59.32%</code></pre>
 </div>
 </div>
-<div id="bf979d9c" class="cell" data-execution_count="20">
+<div id="5baccae7" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> log_reg.score(X_train_sk, y_train)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> log_reg.score(X_test_sk, y_test)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1927,7 +1927,7 @@ Test Accuracy: 0.7409</code></pre>
 <section id="address-the-imbalance-issue" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="address-the-imbalance-issue"><span class="header-section-number">6.5</span> <strong>Address the Imbalance Issue</strong></h2>
 <p>To address the class imbalance issue, I applied the <code>class_weight</code> parameter in the logistic regression model. This parameter allows us to assign different weights to the classes, which can help improve the model’s sensitivity to the minority class (cancellations). By setting <code>class_weight='balanced'</code>, I let scikit-learn automatically adjust the weights inversely proportional to class frequencies in the input data.</p>
-<div id="77930a2c" class="cell" data-execution_count="21">
+<div id="3fe67080" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>log_reg_bl <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, class_weight<span class="op">=</span><span class="st">'balanced'</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>log_reg_bl.fit(X_train_sk, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
@@ -2540,11 +2540,11 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </script>
 </div>
 </div>
-<div id="3c26b1a5" class="cell" data-execution_count="22">
+<div id="5ddeb9e1" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>y_pred_bl <span class="op">=</span> log_reg_bl.predict(X_test_sk)</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cm_logistic_bl <span class="op">=</span> confusion_matrix(y_test, y_pred_bl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="f62f1626" class="cell" data-execution_count="23">
+<div id="d20e99e4" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">4</span>))</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm_logistic_bl, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">'d'</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>, </span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>            xticklabels<span class="op">=</span>[<span class="st">'Not Canceled (0)'</span>, <span class="st">'Canceled (1)'</span>],</span>
@@ -2562,7 +2562,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 </div>
 </div>
-<div id="2111e75e" class="cell" data-execution_count="24">
+<div id="454550a4" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>accuracy_bl <span class="op">=</span> accuracy_score(y_test, y_pred_bl)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sensitivity_bl <span class="op">=</span> recall_score(y_test, y_pred_bl)</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2585,7 +2585,7 @@ The model's precision is 44.24%
 The model's balanced accuracy is 59.32%</code></pre>
 </div>
 </div>
-<div id="d82b76f2" class="cell" data-execution_count="25">
+<div id="08c16cf9" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>train_accuracy_bl <span class="op">=</span> log_reg_bl.score(X_train_sk, y_train)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>test_accuracy_bl <span class="op">=</span> log_reg_bl.score(X_test_sk, y_test)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2598,7 +2598,7 @@ Test Accuracy: 0.6696</code></pre>
 </div>
 <p><strong>These results highlight a substantial improvement in sensitivity, meaning the model is now much more effective at identifying customers who are likely to cancel.</strong> Although overall accuracy and specificity decreased slightly, this trade-off aligns with Lobster Land management’s objective of prioritizing the detection of potential cancellations.</p>
 <p><strong>Moreover, the similar accuracy rates on the training and test sets indicate that the model effectively captures the underlying patterns in the dataset without signs of overfitting.</strong> This balance suggests that the model generalizes well to unseen data while maintaining its predictive reliability. This balance between improved sensitivity and maintained generalizability enhances the model’s practical value in supporting proactive retention strategies.</p>
-<div id="2d104c03" class="cell" data-execution_count="26">
+<div id="65d1469c" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>y_pred_proba <span class="op">=</span> log_reg.predict_proba(X_test_sk)[:, <span class="dv">1</span>]</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds <span class="op">=</span> metrics.roc_curve(y_test, y_pred_proba)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>auc <span class="op">=</span> metrics.roc_auc_score(y_test, y_pred_proba)</span>
@@ -2627,7 +2627,7 @@ Test Accuracy: 0.6696</code></pre>
 </section>
 <section id="model-interpretation-marketing-insights" class="level1" data-number="7">
 <h1 data-number="7"><span class="header-section-number">7</span> <strong>Model Interpretation &amp; Marketing Insights</strong></h1>
-<div id="a2a5745e" class="cell" data-execution_count="27">
+<div id="a282f960" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>coefficients_bl <span class="op">=</span> log_reg_bl.coef_.flatten()</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>coefficients_df <span class="op">=</span> pd.DataFrame({</span>
@@ -2724,7 +2724,7 @@ Test Accuracy: 0.6696</code></pre>
 <section id="concentrating-marketing-efforts" class="level2" data-number="7.3">
 <h2 data-number="7.3" class="anchored" data-anchor-id="concentrating-marketing-efforts"><span class="header-section-number">7.3</span> <strong>Concentrating Marketing Efforts</strong></h2>
 <p>While this standard classification model provides a binary prediction of whether a passenger will cancel, Lobster Land can unlock more business value by utilizing the model’s <strong>predictive probabilities</strong> <em>(predict_proba())</em>. Rather than treating all potential cancellations as a homogenous group, management can <strong>use these probability scores to implement highly nuanced, cost-effective retention strategies.</strong></p>
-<div id="3defe346" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="28">
+<div id="fd36c2e1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>probs_df <span class="op">=</span> pd.DataFrame(log_reg_bl.predict_proba(X_test_sk))</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>probs_df_sorted <span class="op">=</span> probs_df.sort_values(<span class="dv">1</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>probs_df_sorted.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2798,7 +2798,7 @@ Test Accuracy: 0.6696</code></pre>
 </div>
 </div>
 <p>For instance, Lobster Land could <strong>concentrate its targeted outreach by focusing on prospective cruisers whose predict_proba() values are exceptionally high</strong>, such as above 0.80. If the marketing team has a limited budget for expensive interventions, reserving these resources strictly for passengers who are on the verge of canceling ensures a higher return on investment.</p>
-<div id="4b59a923" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="29">
+<div id="06c39b55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;javascript&quot;}}" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>probs_df_middle <span class="op">=</span> probs_df[(probs_df[<span class="dv">1</span>] <span class="op">&gt;</span> <span class="fl">0.3</span>) <span class="op">&amp;</span> (probs_df[<span class="dv">1</span>] <span class="op">&lt;</span> <span class="fl">0.7</span>)].sort_values(<span class="dv">1</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>probs_df_middle.sample(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="29">
@@ -2815,54 +2815,54 @@ Test Accuracy: 0.6696</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">431</th>
-<td>0.396015</td>
-<td>0.603985</td>
+<th data-quarto-table-cell-role="th">239</th>
+<td>0.582447</td>
+<td>0.417553</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">108</th>
-<td>0.377564</td>
-<td>0.622436</td>
+<th data-quarto-table-cell-role="th">238</th>
+<td>0.420499</td>
+<td>0.579501</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">527</th>
-<td>0.433807</td>
-<td>0.566193</td>
+<th data-quarto-table-cell-role="th">798</th>
+<td>0.634084</td>
+<td>0.365916</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">787</th>
-<td>0.421955</td>
-<td>0.578045</td>
+<th data-quarto-table-cell-role="th">122</th>
+<td>0.570431</td>
+<td>0.429569</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">545</th>
-<td>0.664074</td>
-<td>0.335926</td>
+<th data-quarto-table-cell-role="th">294</th>
+<td>0.463898</td>
+<td>0.536102</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">465</th>
-<td>0.419095</td>
-<td>0.580905</td>
+<th data-quarto-table-cell-role="th">159</th>
+<td>0.505541</td>
+<td>0.494459</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">785</th>
-<td>0.338940</td>
-<td>0.661060</td>
+<th data-quarto-table-cell-role="th">661</th>
+<td>0.411306</td>
+<td>0.588694</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">676</th>
-<td>0.685144</td>
-<td>0.314856</td>
+<th data-quarto-table-cell-role="th">16</th>
+<td>0.669128</td>
+<td>0.330872</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">476</th>
-<td>0.465141</td>
-<td>0.534859</td>
+<th data-quarto-table-cell-role="th">570</th>
+<td>0.566529</td>
+<td>0.433471</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">702</th>
-<td>0.539473</td>
-<td>0.460527</td>
+<th data-quarto-table-cell-role="th">475</th>
+<td>0.658999</td>
+<td>0.341001</td>
 </tr>
 </tbody>
 </table>
